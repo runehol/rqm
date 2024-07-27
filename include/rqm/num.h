@@ -87,13 +87,13 @@ namespace rqm
             return *this;
         }
 
-        num(detail::numview o)
+        explicit num(detail::numview o)
             : signum(o.signum)
         {
             detail::digit_t *ptr = setup_storage(o.n_digits);
             std::memcpy(ptr, o.digits, n_digits * sizeof(detail::digit_t));
         }
-        operator detail::numview() const { return detail::numview(n_digits, signum, digits()); }
+        detail::numview to_numview() const { return detail::numview(n_digits, signum, digits()); }
 
         num(int64_t value)
         {
@@ -124,21 +124,21 @@ namespace rqm
             return v * signum;
         }
 
-        bool operator==(const num &o) const { return detail::compare(*this, o) == 0; }
-        bool operator!=(const num &o) const { return detail::compare(*this, o) != 0; }
-        bool operator<(const num &o) const { return detail::compare(*this, o) < 0; }
-        bool operator<=(const num &o) const { return detail::compare(*this, o) <= 0; }
-        bool operator>(const num &o) const { return detail::compare(*this, o) > 0; }
-        bool operator>=(const num &o) const { return detail::compare(*this, o) >= 0; }
+        bool operator==(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) == 0; }
+        bool operator!=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) != 0; }
+        bool operator<(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) < 0; }
+        bool operator<=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) <= 0; }
+        bool operator>(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) > 0; }
+        bool operator>=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) >= 0; }
 
-        num operator-() const { return detail::negate(*this); }
+        num operator-() const { return num(detail::negate(this->to_numview())); }
 
         num operator+(const num &b) const
         {
             detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
             detail::numview c(c_storage);
 
-            return detail::add(c, *this, b);
+            return num(detail::add(c, this->to_numview(), b.to_numview()));
         }
 
         num operator-(const num &b) const
@@ -146,7 +146,7 @@ namespace rqm
             detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
             detail::numview c(c_storage);
 
-            return detail::add(c, *this, detail::negate(b));
+            return num(detail::add(c, this->to_numview(), detail::negate(b.to_numview())));
         }
 
     private:
@@ -178,7 +178,7 @@ namespace rqm
 
     static inline num abs(const num &a)
     {
-        return detail::abs(a);
+        return num(detail::abs(a.to_numview()));
     }
 
 } // namespace rqm
