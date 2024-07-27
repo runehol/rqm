@@ -86,26 +86,16 @@ namespace rqm
             return *this;
         }
 
-        num(int32_t value)
+        num(int64_t value)
         {
-            if(value != 0)
-            {
-                if(value > 0)
-                {
-                    u.digits_inline[0] = value;
-                    signum = 1;
-                    n_digits = 1;
-                } else
-                {
-                    u.digits_inline[0] = -value;
-                    signum = -1;
-                    n_digits = 1;
-                }
-            } else
-            {
-                signum = 0;
-                n_digits = 0;
-            }
+            signum = detail::compare_signum(value, int64_t(0));
+            int64_t abs_value = std::abs(value);
+            u.digits_inline[0] = abs_value & 0xffffffff;
+            u.digits_inline[1] = abs_value >> 32;
+            uint32_t digs = 2;
+            if(u.digits_inline[1] == 0) digs = 1;
+            if(u.digits_inline[0] == 0) digs = 0;
+            n_digits = digs;
         }
 
         num(numview o)

@@ -11,6 +11,7 @@ target_sources(test_rqm PRIVATE
 	)
 
 target_link_libraries(test_rqm PRIVATE gtest_main)
+target_link_libraries(test_rqm PRIVATE rapidcheck_gtest gtest)
 target_link_libraries(test_rqm PRIVATE rqm)
 target_link_libraries(test_rqm PRIVATE project_options project_warnings)
 

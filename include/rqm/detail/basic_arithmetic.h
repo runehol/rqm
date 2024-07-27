@@ -6,6 +6,14 @@ namespace rqm
     namespace detail
     {
         template<typename T>
+        static inline signum_t compare_signum(T a, T b)
+        {
+            if(a < b) return -1;
+            if(a > b) return 1;
+            return 0;
+        }
+
+        template<typename T>
         static inline signum_t internal_compare_unequal(T a, T b)
         {
             return a > b ? 1 : -1;
