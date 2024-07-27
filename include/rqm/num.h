@@ -128,6 +128,8 @@ namespace rqm
         bool operator>(const num &o) const { return detail::compare(*this, o) > 0; }
         bool operator>=(const num &o) const { return detail::compare(*this, o) >= 0; }
 
+        num operator-() const { return detail::negate(*this); }
+
     private:
         uint32_t *setup_storage(size_t _n_digits)
         {

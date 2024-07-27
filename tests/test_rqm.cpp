@@ -22,3 +22,9 @@ RC_GTEST_PROP(RQM, comparison, (int64_t ia, int64_t ib))
     RC_ASSERT((a > b) == (ia > ib));
     RC_ASSERT((a >= b) == (ia >= ib));
 }
+
+RC_GTEST_PROP(RQM, negate, (int64_t ia))
+{
+    rqm::num a = ia;
+    RC_ASSERT(-a == -ia);
+}

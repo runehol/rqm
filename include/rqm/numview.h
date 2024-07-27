@@ -11,6 +11,9 @@ namespace rqm
     using digit_t = uint32_t;
     static constexpr uint32_t n_digit_bits = sizeof(digit_t) * 8;
 
+    using double_digit_t = uint64_t;
+    static constexpr uint32_t n_double_digit_bits = sizeof(double_digit_t) * 8;
+
     /**
        A non-owning view of a number, used for calculations.
        The storage is borrowed from elsewhere, and must be kept alive for the duration of this view.
@@ -37,7 +40,7 @@ namespace rqm
 
         uint32_t n_digits;
         signum_t signum;
-        const digit_t *digits;
+        digit_t *digits;
     };
 
 } // namespace rqm
