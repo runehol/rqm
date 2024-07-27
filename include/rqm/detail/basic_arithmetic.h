@@ -66,6 +66,16 @@ namespace rqm
             return a;
         }
 
+        static inline numview remove_high_zeros(numview c)
+        {
+            // adjust down after cancellation
+            while(c.n_digits > 0 && c.digits[c.n_digits - 1] == 0)
+            {
+                --c.n_digits;
+            }
+            return c;
+        }
+
         // add a and b, assuming both are positive. this function ignores the signs in the view
         static inline numview abs_add(numview c, const numview a, const numview b)
         {
@@ -132,13 +142,7 @@ namespace rqm
 
             assert(carry == 0);
 
-            // adjust down after cancellation
-            while(c.n_digits > 0 && c.digits[c.n_digits - 1] == 0)
-            {
-                --c.n_digits;
-            }
-
-            return c;
+            return remove_high_zeros(c);
         }
 
         static inline numview add(numview c, numview a, numview b)
