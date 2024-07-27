@@ -119,7 +119,7 @@ namespace rqm
             {
                 double_digit_t v = double_digit_t(*a_ptr++) - double_digit_t(*b_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
-                carry = int64_t(v) >> n_digit_bits;
+                carry = signed_double_digit_t(v) >> n_digit_bits;
             }
             assert(b_ptr == b_end);
 
@@ -127,7 +127,7 @@ namespace rqm
             {
                 double_digit_t v = double_digit_t(*a_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
-                carry = int64_t(v) >> n_digit_bits;
+                carry = signed_double_digit_t(v) >> n_digit_bits;
             }
 
             assert(carry == 0);
