@@ -9,6 +9,7 @@ namespace rqm
     using signum_t = int32_t; // sign as -1, 0, 1 representation
 
     using digit_t = uint32_t;
+    static constexpr uint32_t n_digit_bits = sizeof(digit_t) * 8;
 
     /**
        A non-owning view of a number, used for calculations.

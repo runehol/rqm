@@ -8,7 +8,7 @@
 TEST(RQM, instantiation)
 {
     rqm::num one = 1;
-    EXPECT_EQ(one.to_int32_t(), 1);
+    EXPECT_EQ(one.to_int64_t(), 1);
 }
 
 RC_GTEST_PROP(RQM, comparison, (int64_t ia, int64_t ib))

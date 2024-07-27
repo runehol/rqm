@@ -4,6 +4,7 @@
 #include "rqm/numview.h"
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <stdexcept>
 #include <utility>
 
@@ -106,11 +107,17 @@ namespace rqm
         }
         operator numview() const { return numview(n_digits, signum, digits()); }
 
-        int32_t to_int32_t() const
+        int64_t to_int64_t() const
         {
-            uint32_t v = u.digits_inline[0];
-            if(n_digits > 1 || v >= 1u << 31) throw std::overflow_error("Out of range integer");
+            uint64_t v = 0;
+            if(n_digits > n_inline_digits) throw std::overflow_error("Out of range for an int64_t");
 
+            const digit_t *ptr = digits();
+            for(uint32_t idx = 0; idx < n_digits; ++idx)
+            {
+                v |= uint64_t(ptr[idx]) << (idx * n_digit_bits);
+            }
+            if(v > std::numeric_limits<int64_t>::max()) throw std::overflow_error("Out of range for an int64_t");
             return v * signum;
         }
 
@@ -134,7 +141,7 @@ namespace rqm
             }
         }
 
-        static constexpr uint32_t n_inline_digits = sizeof(digit_t *) / sizeof(digit_t);
+        static constexpr uint32_t n_inline_digits = 2;
 
         bool stored_inline() const { return n_digits <= n_inline_digits; }
         const digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
