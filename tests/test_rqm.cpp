@@ -67,3 +67,48 @@ RC_GTEST_PROP(RQM, sub, (int64_t ia, int64_t ib))
     rqm::num c = a - b;
     RC_ASSERT(c == (ia - ib));
 }
+
+RC_GTEST_PROP(RQM, mul_small, (int32_t ia32, int32_t ib32))
+{
+    int64_t ia = ia32;
+    int64_t ib = ib32;
+    rqm::num a = ia;
+    rqm::num b = ib;
+    rqm::num c = a * b;
+    RC_ASSERT(c == (ia * ib));
+}
+
+RC_GTEST_PROP(RQM, mul_larger, (int32_t ia32, int32_t ib32))
+{
+    int64_t ia = ia32;
+    int64_t ib = ib32;
+    rqm::num a = ia;
+    rqm::num b = ib;
+
+    rqm::num c = a * b;
+
+    rqm::num scaled_a = a * 10000000;
+    rqm::num scaled_b = b * 10000000;
+
+    rqm::num scaled_c = c * 10000000 * 10000000;
+
+    RC_ASSERT(scaled_a * scaled_b == scaled_c);
+}
+
+RC_GTEST_PROP(RQM, mul_num_with_digit, (int32_t ia32, int32_t ib32))
+{
+    int64_t ia = ia32;
+    int64_t ib = ib32;
+    rqm::num a = ia;
+    rqm::num c = a * ib;
+    RC_ASSERT(c == (ia * ib));
+}
+
+RC_GTEST_PROP(RQM, mul_digit_with_num, (int32_t ia32, int32_t ib32))
+{
+    int64_t ia = ia32;
+    int64_t ib = ib32;
+    rqm::num b = ib;
+    rqm::num c = ia * b;
+    RC_ASSERT(c == (ia * ib));
+}

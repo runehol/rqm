@@ -203,6 +203,40 @@ namespace rqm
         return num(detail::add(c, a.to_numview(), detail::negate(b.to_numview())));
     }
 
+    static inline num operator*(const num &a, const num &b)
+    {
+        detail::digit_t c_storage[detail::multiply_digit_estimate(a.get_n_digits(), b.get_n_digits())];
+        detail::numview c(c_storage);
+
+        return num(detail::multiply(c, a.to_numview(), b.to_numview()));
+    }
+
+    static inline num operator*(const num &a, int32_t b)
+    {
+        bool negative = false;
+        uint32_t bu = b;
+        if(b < 0)
+        {
+            bu = -b;
+            negative = true;
+        }
+
+        detail::digit_t c_storage[detail::multiply_digit_estimate(a.get_n_digits(), 1)];
+        detail::numview c(c_storage);
+
+        detail::numview res = detail::multiply_with_single_digit(c, a.to_numview(), bu);
+        if(negative)
+        {
+            res = detail::negate(res);
+        }
+        return num(res);
+    }
+
+    static inline num operator*(int32_t a, const num &b)
+    {
+        return b * a;
+    }
+
 } // namespace rqm
 
 #endif // RQM_NUM_H

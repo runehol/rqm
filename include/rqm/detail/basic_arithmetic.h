@@ -186,6 +186,70 @@ namespace rqm
             return std::max(a_digits, b_digits) + 1;
         }
 
+        static inline uint32_t multiply_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+        {
+            return a_digits + b_digits;
+        }
+
+        // multiply of positive numbers, ignoring sign. prefer a large and b small
+        static inline numview abs_multiply(numview c, const numview a, const numview b)
+        {
+            c.n_digits = multiply_digit_estimate(a.n_digits, b.n_digits);
+
+            // set it all to zero
+            memset(c.digits, 0, c.n_digits * sizeof(c.digits[0]));
+
+            for(uint32_t b_idx = 0; b_idx < b.n_digits; ++b_idx)
+            {
+                double_digit_t b_val = b.digits[b_idx];
+                double_digit_t carry = 0;
+                uint32_t c_idx = b_idx;
+                for(uint32_t a_idx = 0; a_idx < a.n_digits; ++a_idx)
+                {
+                    double_digit_t v = double_digit_t(a.digits[a_idx]) * b_val + carry + double_digit_t(c.digits[c_idx]);
+                    c.digits[c_idx++] = v;
+                    carry = v >> n_digit_bits;
+                }
+                while(carry != 0)
+                {
+                    double_digit_t v = carry + double_digit_t(c.digits[c_idx]);
+                    c.digits[c_idx++] = v;
+                    carry = v >> n_digit_bits;
+                }
+            }
+
+            return remove_high_zeros(c);
+        }
+
+        static inline numview multiply(numview c, const numview a, const numview b)
+        {
+            if(a.signum == 0) return a;
+            if(b.signum == 0) return b;
+
+            return with_signum(a.signum * b.signum, abs_multiply(c, a, b));
+        }
+
+        static inline numview multiply_with_single_digit(numview c, const numview a, digit_t b)
+        {
+            if(a.signum == 0) return numview(nullptr);
+            if(b == 0) return numview(nullptr);
+            double_digit_t b_val = b;
+            double_digit_t carry = 0;
+            c.signum = a.signum;
+            c.n_digits = 0;
+            for(uint32_t a_idx = 0; a_idx < a.n_digits; ++a_idx)
+            {
+                double_digit_t v = double_digit_t(a.digits[a_idx]) * b_val + carry;
+                c.digits[c.n_digits++] = v;
+                carry = v >> n_digit_bits;
+            }
+            if(carry != 0)
+            {
+                c.digits[c.n_digits++] = carry;
+            }
+            return c;
+        }
+
     } // namespace detail
 } // namespace rqm
 
