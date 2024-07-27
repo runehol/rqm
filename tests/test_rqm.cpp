@@ -28,3 +28,9 @@ RC_GTEST_PROP(RQM, negate, (int64_t ia))
     rqm::num a = ia;
     RC_ASSERT(-a == -ia);
 }
+
+RC_GTEST_PROP(RQM, abs, (int64_t ia))
+{
+    rqm::num a = ia;
+    RC_ASSERT(rqm::abs(a) == std::abs(ia));
+}

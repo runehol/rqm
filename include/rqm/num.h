@@ -1,7 +1,7 @@
 #ifndef RQM_NUM_H
 #define RQM_NUM_H
 
-#include "rqm/numview.h"
+#include "rqm/detail/numview.h"
 #include <cstdint>
 #include <cstring>
 #include <limits>
@@ -40,8 +40,8 @@ namespace rqm
         num(const num &o) // copy constructor
         {
             signum = o.signum;
-            digit_t *ptr = setup_storage(o.n_digits);
-            std::memcpy(ptr, o.digits(), n_digits * sizeof(digit_t));
+            detail::digit_t *ptr = setup_storage(o.n_digits);
+            std::memcpy(ptr, o.digits(), n_digits * sizeof(detail::digit_t));
         }
 
         num(num &&o) noexcept // move constructor
@@ -49,8 +49,8 @@ namespace rqm
             signum = o.signum;
             if(o.stored_inline())
             {
-                digit_t *ptr = setup_storage(o.n_digits);
-                std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(digit_t));
+                detail::digit_t *ptr = setup_storage(o.n_digits);
+                std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(detail::digit_t));
             } else
             {
                 n_digits = o.n_digits;
@@ -77,7 +77,7 @@ namespace rqm
                 if(o.stored_inline())
                 {
                     n_digits = o.n_digits;
-                    std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(digit_t));
+                    std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(detail::digit_t));
                 } else
                 {
                     std::swap(n_digits, o.n_digits);
@@ -86,6 +86,14 @@ namespace rqm
             }
             return *this;
         }
+
+        num(detail::numview o)
+            : signum(o.signum)
+        {
+            detail::digit_t *ptr = setup_storage(o.n_digits);
+            std::memcpy(ptr, o.digits, n_digits * sizeof(detail::digit_t));
+        }
+        operator detail::numview() const { return detail::numview(n_digits, signum, digits()); }
 
         num(int64_t value)
         {
@@ -99,23 +107,15 @@ namespace rqm
             n_digits = digs;
         }
 
-        num(numview o)
-            : signum(o.signum)
-        {
-            digit_t *ptr = setup_storage(o.n_digits);
-            std::memcpy(ptr, o.digits, n_digits * sizeof(digit_t));
-        }
-        operator numview() const { return numview(n_digits, signum, digits()); }
-
         int64_t to_int64_t() const
         {
             uint64_t v = 0;
             if(n_digits > n_inline_digits) throw std::overflow_error("Out of range for an int64_t");
 
-            const digit_t *ptr = digits();
+            const detail::digit_t *ptr = digits();
             for(uint32_t idx = 0; idx < n_digits; ++idx)
             {
-                v |= uint64_t(ptr[idx]) << (idx * n_digit_bits);
+                v |= uint64_t(ptr[idx]) << (idx * detail::n_digit_bits);
             }
             if(v > std::numeric_limits<int64_t>::max()) throw std::overflow_error("Out of range for an int64_t");
             return v * signum;
@@ -139,23 +139,28 @@ namespace rqm
                 return u.digits_inline;
             } else
             {
-                return (u.digits_ptr = new digit_t[_n_digits]);
+                return (u.digits_ptr = new detail::digit_t[_n_digits]);
             }
         }
 
         static constexpr uint32_t n_inline_digits = 2;
 
         bool stored_inline() const { return n_digits <= n_inline_digits; }
-        const digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
+        const detail::digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
 
         uint32_t n_digits;
-        signum_t signum;
+        detail::signum_t signum;
         union
         {
-            digit_t *digits_ptr;
-            digit_t digits_inline[n_inline_digits];
+            detail::digit_t *digits_ptr;
+            detail::digit_t digits_inline[n_inline_digits];
         } u;
     };
+
+    static inline num abs(const num &a)
+    {
+        return detail::abs(a);
+    }
 
 } // namespace rqm
 

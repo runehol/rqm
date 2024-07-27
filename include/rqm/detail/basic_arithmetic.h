@@ -1,7 +1,7 @@
 #ifndef RQM_DETAIL_BASIC_ARITHMETIC_H
 #define RQM_DETAIL_BASIC_ARITHMETIC_H
 
-#include "rqm/numview.h"
+#include "rqm/detail/numview.h"
 #include <cassert>
 #include <cstdint>
 
