@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <utility>
 
+#include "rqm/detail/basic_arithmetic.h"
+
 namespace rqm
 {
 
@@ -121,6 +123,13 @@ namespace rqm
 
             return v * signum;
         }
+
+        bool operator==(const num &o) const { return detail::compare(*this, o) == 0; }
+        bool operator!=(const num &o) const { return detail::compare(*this, o) != 0; }
+        bool operator<(const num &o) const { return detail::compare(*this, o) < 0; }
+        bool operator<=(const num &o) const { return detail::compare(*this, o) <= 0; }
+        bool operator>(const num &o) const { return detail::compare(*this, o) > 0; }
+        bool operator>=(const num &o) const { return detail::compare(*this, o) >= 0; }
 
     private:
         uint32_t *setup_storage(size_t _n_digits)
