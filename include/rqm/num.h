@@ -123,31 +123,7 @@ namespace rqm
             if(v > std::numeric_limits<int64_t>::max()) throw std::overflow_error("Out of range for an int64_t");
             return v * signum;
         }
-
-        bool operator==(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) == 0; }
-        bool operator!=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) != 0; }
-        bool operator<(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) < 0; }
-        bool operator<=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) <= 0; }
-        bool operator>(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) > 0; }
-        bool operator>=(const num &o) const { return detail::compare(this->to_numview(), o.to_numview()) >= 0; }
-
-        num operator-() const { return num(detail::negate(this->to_numview())); }
-
-        num operator+(const num &b) const
-        {
-            detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
-            detail::numview c(c_storage);
-
-            return num(detail::add(c, this->to_numview(), b.to_numview()));
-        }
-
-        num operator-(const num &b) const
-        {
-            detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
-            detail::numview c(c_storage);
-
-            return num(detail::add(c, this->to_numview(), detail::negate(b.to_numview())));
-        }
+        uint32_t get_n_digits() const { return n_digits; }
 
     private:
         uint32_t *setup_storage(size_t _n_digits)
@@ -179,6 +155,52 @@ namespace rqm
     static inline num abs(const num &a)
     {
         return num(detail::abs(a.to_numview()));
+    }
+
+    static inline bool operator==(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) == 0;
+    }
+    static inline bool operator!=(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) != 0;
+    }
+    static inline bool operator<(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) < 0;
+    }
+    static inline bool operator<=(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) <= 0;
+    }
+    static inline bool operator>(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) > 0;
+    }
+    static inline bool operator>=(const num &a, const num &b)
+    {
+        return detail::compare(a.to_numview(), b.to_numview()) >= 0;
+    }
+
+    static inline num operator-(const num &a)
+    {
+        return num(detail::negate(a.to_numview()));
+    }
+
+    static inline num operator+(const num &a, const num &b)
+    {
+        detail::digit_t c_storage[detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits())];
+        detail::numview c(c_storage);
+
+        return num(detail::add(c, a.to_numview(), b.to_numview()));
+    }
+
+    static inline num operator-(const num &a, const num &b)
+    {
+        detail::digit_t c_storage[detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits())];
+        detail::numview c(c_storage);
+
+        return num(detail::add(c, a.to_numview(), detail::negate(b.to_numview())));
     }
 
 } // namespace rqm
