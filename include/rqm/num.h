@@ -102,8 +102,11 @@ namespace rqm
             u.digits_inline[0] = abs_value & 0xffffffff;
             u.digits_inline[1] = abs_value >> 32;
             uint32_t digs = 2;
-            if(u.digits_inline[1] == 0) digs = 1;
-            if(u.digits_inline[0] == 0) digs = 0;
+            if(u.digits_inline[1] == 0)
+            {
+                digs = 1;
+                if(u.digits_inline[0] == 0) digs = 0;
+            }
             n_digits = digs;
         }
 
@@ -129,6 +132,22 @@ namespace rqm
         bool operator>=(const num &o) const { return detail::compare(*this, o) >= 0; }
 
         num operator-() const { return detail::negate(*this); }
+
+        num operator+(const num &b) const
+        {
+            detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
+            detail::numview c(c_storage);
+
+            return detail::add(c, *this, b);
+        }
+
+        num operator-(const num &b) const
+        {
+            detail::digit_t c_storage[detail::add_digit_estimate(n_digits, b.n_digits)];
+            detail::numview c(c_storage);
+
+            return detail::add(c, *this, detail::negate(b));
+        }
 
     private:
         uint32_t *setup_storage(size_t _n_digits)

@@ -2,6 +2,7 @@
 #define RQM_DETAIL_BASIC_ARITHMETIC_H
 
 #include "rqm/detail/numview.h"
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 
@@ -78,7 +79,7 @@ namespace rqm
 
             while(a_ptr < a_end && b_ptr < b_end)
             {
-                double_digit_t v = double_digit_t(*a_ptr++) + double_digit_t(*b_ptr) + carry;
+                double_digit_t v = double_digit_t(*a_ptr++) + double_digit_t(*b_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
                 carry = v >> n_digit_bits;
             }
@@ -92,7 +93,7 @@ namespace rqm
 
             while(b_ptr < b_end)
             {
-                double_digit_t v = double_digit_t(*b_ptr) + carry;
+                double_digit_t v = double_digit_t(*b_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
                 carry = v >> n_digit_bits;
             }
@@ -116,9 +117,9 @@ namespace rqm
             assert(a.n_digits >= b.n_digits);
             while(b_ptr < b_end)
             {
-                double_digit_t v = double_digit_t(*a_ptr++) - double_digit_t(*b_ptr) + carry;
+                double_digit_t v = double_digit_t(*a_ptr++) - double_digit_t(*b_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
-                carry = v >> n_digit_bits;
+                carry = int64_t(v) >> n_digit_bits;
             }
             assert(b_ptr == b_end);
 
@@ -126,10 +127,16 @@ namespace rqm
             {
                 double_digit_t v = double_digit_t(*a_ptr++) + carry;
                 c.digits[c.n_digits++] = v;
-                carry = v >> n_digit_bits;
+                carry = int64_t(v) >> n_digit_bits;
             }
 
             assert(carry == 0);
+
+            // adjust down after cancellation
+            while(c.n_digits > 0 && c.digits[c.n_digits - 1] == 0)
+            {
+                --c.n_digits;
+            }
 
             return c;
         }
@@ -152,17 +159,20 @@ namespace rqm
                     // they're equal! return a zero view
                     return numview(nullptr);
                 }
-                if(comparison > 0)
+                if(comparison < 0)
                 {
-                    // b larger than a, swap the two and change the signs
+                    // b larger than a, swap the two
                     std::swap(b, a);
-                    a.signum = -a.signum;
-                    b.signum = -b.signum;
                 }
 
                 // a is larger than b. subtract the two and attach the a sign
                 return with_signum(a.signum, abs_subtract_a_larger_than_b(c, a, b));
             }
+        }
+
+        static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+        {
+            return std::max(a_digits, b_digits) + 1;
         }
 
     } // namespace detail
