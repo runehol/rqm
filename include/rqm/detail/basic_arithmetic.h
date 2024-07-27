@@ -66,6 +66,13 @@ namespace rqm
             return a;
         }
 
+        static inline numview with_sign_unless_zero(signum_t signum, numview a)
+        {
+            a.signum = signum;
+            if(a.n_digits == 0) a.signum = 0;
+            return a;
+        }
+
         static inline numview remove_high_zeros(numview c)
         {
             // adjust down after cancellation
