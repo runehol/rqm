@@ -107,7 +107,7 @@ namespace rqm
             {
                 MAKE_STACK_TEMPORARY_NUMVIEW(single_digit, 1);
                 MAKE_STACK_TEMPORARY_NUMVIEW(tmp, from_chars_digit_estimate(end - pos));
-
+                bool first = true;
                 while(pos < end)
                 {
                     uint32_t n_digits = std::min<uint32_t>(end - pos, n_decimals_in_digit_low);
@@ -120,9 +120,16 @@ namespace rqm
 
                     single_digit.n_digits = single_digit.signum = single_digit_storage[0] != 0;
 
-                    digit_t scale = digit_t(std::pow(10.0, n_digits));
-                    tmp = multiply_with_single_digit(tmp, dest, scale);
-                    dest = add_always_into_destination(dest, tmp, single_digit);
+                    if(first)
+                    {
+                        dest = copy_view(dest, single_digit);
+                        first = false;
+                    } else
+                    {
+                        digit_t scale = digit_t(std::pow(10.0, n_digits));
+                        tmp = multiply_with_single_digit(tmp, dest, scale);
+                        dest = add_always_into_destination(dest, tmp, single_digit);
+                    }
                 }
             }
             return with_sign_unless_zero(sign, dest);
