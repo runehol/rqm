@@ -37,6 +37,24 @@ static void int64_t_mul(benchmark::State &state)
 
 BENCHMARK(int64_t_mul);
 
+static void int64_t_div(benchmark::State &state)
+{
+    // Perform setup here
+    int64_t a = 99999999;
+    int64_t b = -999999999;
+
+    benchmark::DoNotOptimize(a);
+    benchmark::DoNotOptimize(b);
+    for(auto _: state)
+    {
+        // This code gets timed
+        int64_t c = a / b;
+        benchmark::DoNotOptimize(c);
+    }
+}
+
+BENCHMARK(int64_t_div);
+
 static void RQM_add_same_sign(benchmark::State &state)
 {
     // Perform setup here
@@ -126,3 +144,21 @@ static void RQM_mul_num_with_digit(benchmark::State &state)
 }
 
 BENCHMARK(RQM_mul_num_with_digit);
+
+static void RQM_div_num_with_digit(benchmark::State &state)
+{
+    // Perform setup here
+    rqm::num a = 0x123456789;
+    int32_t b = 0x12345678;
+
+    benchmark::DoNotOptimize(a);
+    benchmark::DoNotOptimize(b);
+    for(auto _: state)
+    {
+        // This code gets timed
+        rqm::num c = a / b;
+        benchmark::DoNotOptimize(c);
+    }
+}
+
+BENCHMARK(RQM_div_num_with_digit);
