@@ -33,6 +33,15 @@ TEST(RQM, simple_to_string)
     EXPECT_EQ(v, exp);
 }
 
+TEST(RQM, simple_from_string)
+{
+    std::string v = "-1113852700";
+    int64_t exp = std::stod(v);
+    rqm::num a = rqm::from_string(v);
+
+    EXPECT_EQ(a, exp);
+}
+
 RC_GTEST_PROP(RQM, comparison, (int64_t ia, int64_t ib))
 {
     rqm::num a = ia;
@@ -145,6 +154,13 @@ RC_GTEST_PROP(RQM, to_string, (int64_t ia))
     std::string as = rqm::to_string(a);
     std::string ias = std::to_string(ia);
     RC_ASSERT(as == ias);
+}
+
+RC_GTEST_PROP(RQM, from_string, (int64_t ia))
+{
+    std::string ias = std::to_string(ia);
+    rqm::num a = rqm::from_string(ias);
+    RC_ASSERT(a == ia);
 }
 
 RC_GTEST_PROP(RQM, repeated_doubling, (uint16_t n_times))

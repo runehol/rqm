@@ -4,6 +4,7 @@
 #include "rqm/detail/basic_arithmetic.h"
 #include <algorithm>
 #include <cassert>
+#include <charconv>
 #include <cstdint>
 #include <string_view>
 
@@ -80,6 +81,52 @@ namespace rqm
             return std::string_view(pos, end - pos);
         }
 
+        [[nodiscard]] static inline constexpr uint32_t from_chars_digit_estimate(uint32_t n_chars)
+        {
+            // at least one digit, plus one for each time we have a new batch of n_decimals_in_digit_low decimals
+            return 1 + n_chars / n_decimals_in_digit_low;
+        }
+
+        // from_chars converts a numeric string in base-10 to a numview.
+        // we take two buffers, dest1 and dest2, and may use either of them for the destination
+        [[nodiscard]] static inline numview from_chars(numview dest, const char *pos, const char *end)
+        {
+            signum_t sign = 1;
+            if(pos == end)
+            {
+                throw std::invalid_argument("no characters to convert");
+            }
+            if(*pos == '-')
+            {
+                sign = -1;
+                ++pos;
+            }
+
+            // now onto the main parsing
+
+            {
+                MAKE_STACK_TEMPORARY_NUMVIEW(single_digit, 1);
+                MAKE_STACK_TEMPORARY_NUMVIEW(tmp, from_chars_digit_estimate(end - pos));
+
+                while(pos < end)
+                {
+                    uint32_t n_digits = std::min<uint32_t>(end - pos, n_decimals_in_digit_low);
+                    auto [ptr, ec] = std::from_chars(pos, pos + n_digits, single_digit_storage[0]);
+                    if(ec != std::errc() || ptr != pos + n_digits)
+                    {
+                        throw std::invalid_argument("Not a number");
+                    }
+                    pos = ptr;
+
+                    single_digit.n_digits = single_digit.signum = single_digit_storage[0] != 0;
+
+                    digit_t scale = digit_t(std::pow(10.0, n_digits));
+                    tmp = multiply_with_single_digit(tmp, dest, scale);
+                    dest = add_always_into_destination(dest, tmp, single_digit);
+                }
+            }
+            return with_sign_unless_zero(sign, dest);
+        }
     } // namespace detail
 } // namespace rqm
 

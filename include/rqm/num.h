@@ -4,6 +4,7 @@
 #include "rqm/detail/numview.h"
 #include <cstdint>
 #include <cstring>
+#include <istream>
 #include <limits>
 #include <ostream>
 #include <stdexcept>
@@ -268,6 +269,12 @@ namespace rqm
         char buf[buf_size];
         std::string_view sv = detail::to_string(&buf[buf_size], a.to_numview());
         return std::string(sv);
+    }
+
+    static inline num from_string(const std::string_view sv)
+    {
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::from_chars_digit_estimate(sv.size()));
+        return num(detail::from_chars(c, sv.cbegin(), sv.cend()));
     }
 
 } // namespace rqm

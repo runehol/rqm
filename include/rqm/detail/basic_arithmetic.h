@@ -10,6 +10,15 @@ namespace rqm
 {
     namespace detail
     {
+
+        static inline numview copy_view(numview dest, const numview src)
+        {
+            dest.signum = src.signum;
+            dest.n_digits = src.n_digits;
+            memcpy(dest.digits, src.digits, src.n_digits * sizeof(src.digits[0]));
+            return dest;
+        }
+
         template<typename T>
         [[nodiscard]] static inline signum_t compare_signum(T a, T b)
         {
@@ -70,6 +79,13 @@ namespace rqm
         {
             a.signum = signum;
             if(a.n_digits == 0) a.signum = 0;
+            return a;
+        }
+
+        [[nodiscard]] static inline numview zero_out(numview a)
+        {
+            a.signum = 0;
+            a.n_digits = 0;
             return a;
         }
 
@@ -168,7 +184,7 @@ namespace rqm
                 if(comparison == 0)
                 {
                     // they're equal! return a zero view
-                    return numview::zero();
+                    return zero_out(c);
                 }
                 if(comparison < 0)
                 {
@@ -179,6 +195,13 @@ namespace rqm
                 // a is larger than b. subtract the two and attach the a sign
                 return with_signum(a.signum, abs_subtract_a_larger_than_b(c, a, b));
             }
+        }
+
+        [[nodiscard]] static inline numview add_always_into_destination(numview c, numview a, numview b)
+        {
+            if(a.signum == 0) return copy_view(c, b);
+            if(b.signum == 0) return copy_view(c, a);
+            return add(c, a, b);
         }
 
         [[nodiscard]] static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
@@ -228,16 +251,16 @@ namespace rqm
 
         [[nodiscard]] static inline numview multiply(numview c, const numview a, const numview b)
         {
-            if(a.signum == 0) return numview::zero();
-            if(b.signum == 0) return numview::zero();
+            if(a.signum == 0) return zero_out(c);
+            if(b.signum == 0) return zero_out(c);
 
             return with_signum(a.signum * b.signum, abs_multiply(c, a, b));
         }
 
         [[nodiscard]] static inline numview multiply_with_single_digit(numview c, const numview a, digit_t b)
         {
-            if(a.signum == 0) return numview::zero();
-            if(b == 0) return numview::zero();
+            if(a.signum == 0) return zero_out(c);
+            if(b == 0) return zero_out(c);
             double_digit_t b_val = b;
             double_digit_t carry = 0;
             c.signum = a.signum;
@@ -289,7 +312,7 @@ namespace rqm
         [[nodiscard]] static inline numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
         {
             if(divisor == 0) throw std::out_of_range("divide by zero");
-            if(dividend.signum == 0) return numview::zero();
+            if(dividend.signum == 0) return zero_out(quotient);
             return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
         }
 
