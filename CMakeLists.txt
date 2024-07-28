@@ -43,7 +43,7 @@ include(cmake/StaticAnalyzers.cmake)
 
 # Main targets built by this project
 
-add_subdirectory(include)
+add_subdirectory(src)
 
 # Things typically only needed if we are the top level project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
