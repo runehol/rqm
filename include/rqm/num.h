@@ -189,24 +189,21 @@ namespace rqm
 
     static inline num operator+(const num &a, const num &b)
     {
-        detail::digit_t c_storage[detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits())];
-        detail::numview c(c_storage);
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
         return num(detail::add(c, a.to_numview(), b.to_numview()));
     }
 
     static inline num operator-(const num &a, const num &b)
     {
-        detail::digit_t c_storage[detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits())];
-        detail::numview c(c_storage);
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
         return num(detail::add(c, a.to_numview(), detail::negate(b.to_numview())));
     }
 
     static inline num operator*(const num &a, const num &b)
     {
-        detail::digit_t c_storage[detail::multiply_digit_estimate(a.get_n_digits(), b.get_n_digits())];
-        detail::numview c(c_storage);
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::multiply_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
         return num(detail::multiply(c, a.to_numview(), b.to_numview()));
     }
@@ -221,8 +218,7 @@ namespace rqm
             negative = true;
         }
 
-        detail::digit_t c_storage[detail::multiply_digit_estimate(a.get_n_digits(), 1)];
-        detail::numview c(c_storage);
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::multiply_digit_estimate(a.get_n_digits(), 1));
 
         detail::numview res = detail::multiply_with_single_digit(c, a.to_numview(), bu);
         if(negative)
@@ -241,9 +237,7 @@ namespace rqm
             bu = -b;
             negative = true;
         }
-
-        detail::digit_t c_storage[detail::quotient_digit_estimate(a.get_n_digits())];
-        detail::numview c(c_storage);
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::quotient_digit_estimate(a.get_n_digits()));
 
         detail::numview res = detail::divide_by_single_digit(c, a.to_numview(), bu);
         if(negative)

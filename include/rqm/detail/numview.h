@@ -42,6 +42,10 @@ namespace rqm
         };
     } // namespace detail
 
+#define MAKE_STACK_TEMPORARY_NUMVIEW(name, n_digits)                                                                                                                                                   \
+    detail::digit_t name##_storage[(n_digits)];                                                                                                                                                        \
+    detail::numview name(name##_storage)
+
 } // namespace rqm
 
 #endif // RQM_DETAIL_NUMVIEW_H
