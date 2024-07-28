@@ -146,3 +146,33 @@ RC_GTEST_PROP(RQM, to_string, (int64_t ia))
     std::string ias = std::to_string(ia);
     RC_ASSERT(as == ias);
 }
+
+RC_GTEST_PROP(RQM, repeated_doubling, (uint16_t n_times))
+{
+    RC_PRE(n_times < 1024); // let's stay within 1024 bits
+    rqm::num v = 2;
+    uint64_t n_bits = 1;
+    for(uint32_t i = 0; i < n_times; ++i)
+    {
+        v = v * 2;
+        ++n_bits;
+    }
+    uint32_t expected_n_digits = 1 + n_bits / rqm::detail::n_digit_bits;
+
+    RC_ASSERT(v.get_n_digits() == expected_n_digits);
+}
+
+RC_GTEST_PROP(RQM, repeated_squaring, (uint8_t n_times))
+{
+    RC_PRE(n_times < 16);
+    rqm::num v = 2;
+    uint64_t n_bits = 1;
+    for(uint32_t i = 0; i < n_times; ++i)
+    {
+        v = v * v;
+        n_bits *= 2;
+    }
+    uint32_t expected_n_digits = 1 + n_bits / rqm::detail::n_digit_bits;
+
+    RC_ASSERT(v.get_n_digits() == expected_n_digits);
+}
