@@ -232,6 +232,27 @@ namespace rqm
         return num(res);
     }
 
+    static inline num operator/(const num &a, int32_t b)
+    {
+        bool negative = false;
+        uint32_t bu = b;
+        if(b < 0)
+        {
+            bu = -b;
+            negative = true;
+        }
+
+        detail::digit_t c_storage[detail::quotient_digit_estimate(a.get_n_digits())];
+        detail::numview c(c_storage);
+
+        detail::numview res = detail::divide_by_single_digit(c, a.to_numview(), bu);
+        if(negative)
+        {
+            res = detail::negate(res);
+        }
+        return num(res);
+    }
+
     static inline num operator*(int32_t a, const num &b)
     {
         return b * a;

@@ -112,3 +112,12 @@ RC_GTEST_PROP(RQM, mul_digit_with_num, (int32_t ia32, int32_t ib32))
     rqm::num c = ia * b;
     RC_ASSERT(c == (ia * ib));
 }
+
+RC_GTEST_PROP(RQM, divide_num_with_digit, (int64_t ia, int32_t ib32))
+{
+    RC_PRE(ib32 != 0);
+    int64_t ib = ib32;
+    rqm::num a = ia;
+    rqm::num quotient = a / ib;
+    RC_ASSERT(quotient == (ia / ib));
+}

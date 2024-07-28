@@ -191,13 +191,18 @@ namespace rqm
             return a_digits + b_digits;
         }
 
+        static inline numview zero_with_n_digits(numview c, uint32_t n_digits)
+        {
+            // set it all to zero
+            c.n_digits = n_digits;
+            memset(c.digits, 0, n_digits * sizeof(c.digits[0]));
+            return c;
+        }
+
         // multiply of positive numbers, ignoring sign. prefer a large and b small
         static inline numview abs_multiply(numview c, const numview a, const numview b)
         {
-            c.n_digits = multiply_digit_estimate(a.n_digits, b.n_digits);
-
-            // set it all to zero
-            memset(c.digits, 0, c.n_digits * sizeof(c.digits[0]));
+            c = zero_with_n_digits(c, multiply_digit_estimate(a.n_digits, b.n_digits));
 
             for(uint32_t b_idx = 0; b_idx < b.n_digits; ++b_idx)
             {
@@ -248,6 +253,44 @@ namespace rqm
                 c.digits[c.n_digits++] = carry;
             }
             return c;
+        }
+
+        static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits)
+        {
+            return dividend_digits;
+        }
+
+        static inline numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32)
+        {
+
+            quotient = zero_with_n_digits(quotient, dividend.n_digits);
+
+            double_digit_t remainder = 0;
+            double_digit_t divisor = divisor32;
+
+            for(int32_t idx = dividend.n_digits - 1; idx >= 0; --idx)
+            {
+                assert(remainder < (1ull << n_digit_bits));
+                remainder = (remainder << n_digit_bits) | dividend.digits[idx];
+                double_digit_t q = remainder / divisor;
+                remainder = remainder % divisor;
+                assert(q < (1ull << n_digit_bits));
+                quotient.digits[idx] = q;
+            }
+            assert(remainder < (1ull << n_digit_bits));
+            if(remainder_ptr != nullptr)
+            {
+                *remainder_ptr = remainder;
+            }
+
+            return remove_high_zeros(quotient);
+        }
+
+        static inline numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
+        {
+            if(divisor == 0) throw std::out_of_range("divide by zero");
+            if(dividend.signum == 0) return numview(nullptr);
+            return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
         }
 
     } // namespace detail
