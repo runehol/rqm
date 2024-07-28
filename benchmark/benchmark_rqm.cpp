@@ -63,12 +63,14 @@ static void RQM_add_same_sign(benchmark::State &state)
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
+    rqm::num c;
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a + b;
+        c = a + b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "9773436690");
 }
 
 BENCHMARK(RQM_add_same_sign);
@@ -78,15 +80,17 @@ static void RQM_add_diff_sign_a_larger(benchmark::State &state)
     // Perform setup here
     rqm::num a = 0x123456789;
     rqm::num b = -0x12345678;
+    rqm::num c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a + b;
+        c = a + b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "4581298449");
 }
 
 BENCHMARK(RQM_add_diff_sign_a_larger);
@@ -96,15 +100,17 @@ static void RQM_add_diff_sign_b_larger(benchmark::State &state)
     // Perform setup here
     rqm::num a = -0x12345678;
     rqm::num b = 0x123456789;
+    rqm::num c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a + b;
+        c = a + b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "4581298449");
 }
 
 BENCHMARK(RQM_add_diff_sign_b_larger);
@@ -114,15 +120,17 @@ static void RQM_mul(benchmark::State &state)
     // Perform setup here
     rqm::num a = 0x123456789;
     rqm::num b = 0x12345678;
+    rqm::num c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a * b;
+        c = a * b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "1492501008711192120");
 }
 
 BENCHMARK(RQM_mul);
@@ -131,6 +139,7 @@ static void RQM_mul_num_with_digit(benchmark::State &state)
 {
     // Perform setup here
     rqm::num a = 0x123456789;
+    rqm::num c;
     int32_t b = 0x12345678;
 
     benchmark::DoNotOptimize(a);
@@ -138,9 +147,10 @@ static void RQM_mul_num_with_digit(benchmark::State &state)
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a * b;
+        c = a * b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "1492501008711192120");
 }
 
 BENCHMARK(RQM_mul_num_with_digit);
@@ -149,6 +159,7 @@ static void RQM_div_num_with_digit(benchmark::State &state)
 {
     // Perform setup here
     rqm::num a = 0x123456789;
+    rqm::num c;
     int32_t b = 0x12345678;
 
     benchmark::DoNotOptimize(a);
@@ -156,9 +167,10 @@ static void RQM_div_num_with_digit(benchmark::State &state)
     for(auto _: state)
     {
         // This code gets timed
-        rqm::num c = a / b;
+        c = a / b;
         benchmark::DoNotOptimize(c);
     }
+    assert(rqm::to_string(c) == "16");
 }
 
 BENCHMARK(RQM_div_num_with_digit);

@@ -3,6 +3,13 @@
 
 #include <gmp.h>
 
+std::string to_string(mpz_t v)
+{
+    char buf[1024];
+    gmp_snprintf(buf, 1024, "%Zd", v);
+    return std::string(buf);
+}
+
 static void GMP_add_same_sign(benchmark::State &state)
 {
     mpz_t a, b, c;
@@ -20,6 +27,7 @@ static void GMP_add_same_sign(benchmark::State &state)
         mpz_add(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "9773436690");
     mpz_clears(a, b, c, nullptr);
 }
 
@@ -42,6 +50,7 @@ static void GMP_add_diff_sign_a_larger(benchmark::State &state)
         mpz_add(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "4581298449");
     mpz_clears(a, b, c, nullptr);
 }
 
@@ -64,6 +73,7 @@ static void GMP_add_diff_sign_b_larger(benchmark::State &state)
         mpz_add(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "4581298449");
     mpz_clears(a, b, c, nullptr);
 }
 
@@ -86,6 +96,7 @@ static void GMP_mul(benchmark::State &state)
         mpz_mul(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "1492501008711192120");
     mpz_clears(a, b, c, nullptr);
 }
 
@@ -107,6 +118,7 @@ static void GMP_mul_num_with_digit(benchmark::State &state)
         mpz_mul_si(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "1492501008711192120");
     mpz_clears(a, c, nullptr);
 }
 
@@ -128,6 +140,7 @@ static void GMP_div_num_with_digit(benchmark::State &state)
         mpz_tdiv_q_ui(c, a, b);
         benchmark::DoNotOptimize(c);
     }
+    assert(to_string(c) == "16");
     mpz_clears(a, c, nullptr);
 }
 
