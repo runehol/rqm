@@ -103,8 +103,8 @@ namespace rqm
     [[nodiscard]] numview add(numview c, numview a, numview b)
     {
         // take care of zero cases
-        if(a.signum == 0) return b;
-        if(b.signum == 0) return a;
+        if(a.signum == 0) return copy_view(c, b);
+        if(b.signum == 0) return copy_view(c, a);
 
         if(a.signum == b.signum)
         {

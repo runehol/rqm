@@ -112,7 +112,7 @@ namespace rqm
                 {
                     digit_t scale = digit_t(std::pow(10.0, n_digits));
                     tmp = multiply_with_single_digit(tmp, dest, scale);
-                    dest = add_always_into_destination(dest, tmp, single_digit);
+                    dest = add(dest, tmp, single_digit);
                 }
             }
         }

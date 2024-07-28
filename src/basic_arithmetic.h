@@ -81,13 +81,6 @@ namespace rqm
 
     [[nodiscard]] numview add(numview c, numview a, numview b);
 
-    [[nodiscard]] static inline numview add_always_into_destination(numview c, numview a, numview b)
-    {
-        if(a.signum == 0) return copy_view(c, b);
-        if(b.signum == 0) return copy_view(c, a);
-        return add(c, a, b);
-    }
-
     [[nodiscard]] static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
     {
         return std::max(a_digits, b_digits) + 1;
