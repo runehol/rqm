@@ -24,6 +24,15 @@ TEST(RQM, simple_add)
     EXPECT_EQ(c, cexp);
 }
 
+TEST(RQM, simple_to_string)
+{
+    int64_t ia = -1113852700;
+    rqm::num a = ia;
+    std::string v = rqm::to_string(a);
+    std::string exp = "-1113852700";
+    EXPECT_EQ(v, exp);
+}
+
 RC_GTEST_PROP(RQM, comparison, (int64_t ia, int64_t ib))
 {
     rqm::num a = ia;

@@ -22,7 +22,7 @@ namespace rqm
         [[nodiscard]] static inline uint32_t to_string_buffer_estimate(uint32_t n_digits)
         {
             // 1 for possible sign, maximum number of decimals per digits times number of digits
-            return 100 + 1 + n_decimals_in_digit_high * n_digits;
+            return 1 + n_decimals_in_digit_high * n_digits;
         }
 
         [[nodiscard]] static inline std::string_view to_string(char *dest_end, const numview n)
@@ -48,9 +48,18 @@ namespace rqm
 
                 // value_to_format holds the remainder for this division. format it.
                 char buf[n_decimals_in_digit_low + 1];
-                snprintf(buf, n_decimals_in_digit_low + 1, "%09u", value_to_format);
-                pos -= n_decimals_in_digit_low;
-                memcpy(pos, buf, n_decimals_in_digit_low);
+                int n_chars_written;
+                if(value.n_digits > 0)
+                {
+                    // there's more left. make sure we have 9 characters with leading zeros if necessary
+                    n_chars_written = snprintf(buf, n_decimals_in_digit_low + 1, "%09u", value_to_format);
+                } else
+                {
+                    // just the actual non-zero values, please
+                    n_chars_written = snprintf(buf, n_decimals_in_digit_low + 1, "%u", value_to_format);
+                }
+                pos -= n_chars_written;
+                memcpy(pos, buf, n_chars_written);
             }
 
             pos = chomp_leading_zeros(pos);
