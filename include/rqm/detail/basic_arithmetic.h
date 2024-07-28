@@ -168,7 +168,7 @@ namespace rqm
                 if(comparison == 0)
                 {
                     // they're equal! return a zero view
-                    return numview(nullptr);
+                    return numview::zero();
                 }
                 if(comparison < 0)
                 {
@@ -228,16 +228,16 @@ namespace rqm
 
         static inline numview multiply(numview c, const numview a, const numview b)
         {
-            if(a.signum == 0) return a;
-            if(b.signum == 0) return b;
+            if(a.signum == 0) return numview::zero();
+            if(b.signum == 0) return numview::zero();
 
             return with_signum(a.signum * b.signum, abs_multiply(c, a, b));
         }
 
         static inline numview multiply_with_single_digit(numview c, const numview a, digit_t b)
         {
-            if(a.signum == 0) return numview(nullptr);
-            if(b == 0) return numview(nullptr);
+            if(a.signum == 0) return numview::zero();
+            if(b == 0) return numview::zero();
             double_digit_t b_val = b;
             double_digit_t carry = 0;
             c.signum = a.signum;
@@ -289,7 +289,7 @@ namespace rqm
         static inline numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
         {
             if(divisor == 0) throw std::out_of_range("divide by zero");
-            if(dividend.signum == 0) return numview(nullptr);
+            if(dividend.signum == 0) return numview::zero();
             return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
         }
 

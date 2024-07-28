@@ -41,6 +41,8 @@ namespace rqm
                   digits(_digits)
             {}
 
+            static numview zero() { return numview(nullptr); }
+
             uint32_t n_digits;
             signum_t signum;
             digit_t *digits;
