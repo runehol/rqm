@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include "rqm/detail/digit.h"
+#include "rqm/digit.h"
 namespace rqm
 {
 

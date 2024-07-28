@@ -1,7 +1,7 @@
 #ifndef RQM_DETAIL_NUMVIEW_H
 #define RQM_DETAIL_NUMVIEW_H
 
-#include "rqm/detail/digit.h"
+#include "rqm/digit.h"
 #include <cstddef>
 #include <cstdint>
 
