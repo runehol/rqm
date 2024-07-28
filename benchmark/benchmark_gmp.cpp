@@ -79,6 +79,31 @@ static void GMP_add_diff_sign_b_larger(benchmark::State &state)
 
 BENCHMARK(GMP_add_diff_sign_b_larger);
 
+static void GMP_add_with_clearing_and_reinitialization_of_c(benchmark::State &state)
+{
+    mpz_t a, b;
+    mpz_inits(a, b, nullptr);
+
+    // Perform setup here
+    mpz_set_str(a, "0x123456789", 0);
+    mpz_set_str(b, "0x123456789", 0);
+
+    benchmark::DoNotOptimize(a);
+    benchmark::DoNotOptimize(b);
+    for(auto _: state)
+    {
+        mpz_t c;
+        mpz_init(c);
+        // This code gets timed
+        mpz_add(c, a, b);
+        benchmark::DoNotOptimize(c);
+        mpz_clear(c);
+    }
+    mpz_clears(a, b, nullptr);
+}
+
+BENCHMARK(GMP_add_with_clearing_and_reinitialization_of_c);
+
 static void GMP_mul(benchmark::State &state)
 {
     mpz_t a, b, c;
