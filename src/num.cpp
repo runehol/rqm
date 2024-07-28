@@ -16,7 +16,7 @@ namespace rqm
 
     num::num(int64_t value)
     {
-        signum = detail::compare_signum(value, int64_t(0));
+        signum = compare_signum(value, int64_t(0));
         int64_t abs_value = std::abs(value);
         u.digits_inline[0] = abs_value & 0xffffffff;
         u.digits_inline[1] = abs_value >> 32;
@@ -34,81 +34,81 @@ namespace rqm
         uint64_t v = 0;
         if(n_digits > n_inline_digits) throw std::overflow_error("Out of range for an int64_t");
 
-        const detail::digit_t *ptr = digits();
+        const digit_t *ptr = digits();
         for(uint32_t idx = 0; idx < n_digits; ++idx)
         {
-            v |= uint64_t(ptr[idx]) << (idx * detail::n_digit_bits);
+            v |= uint64_t(ptr[idx]) << (idx * n_digit_bits);
         }
         if(v > std::numeric_limits<int64_t>::max()) throw std::overflow_error("Out of range for an int64_t");
         return v * signum;
     }
 
-    num::num(detail::numview o)
+    num::num(numview o)
         : signum(o.signum)
     {
-        detail::digit_t *ptr = setup_storage(o.n_digits);
-        std::memcpy(ptr, o.digits, n_digits * sizeof(detail::digit_t));
+        digit_t *ptr = setup_storage(o.n_digits);
+        std::memcpy(ptr, o.digits, n_digits * sizeof(digit_t));
     }
 
-    detail::numview num::to_numview() const
+    numview num::to_numview() const
     {
-        return detail::numview(n_digits, signum, digits());
+        return numview(n_digits, signum, digits());
     }
 
     num abs(const num &a)
     {
-        return num(detail::abs(a.to_numview()));
+        return num(abs(a.to_numview()));
     }
 
     bool operator==(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) == 0;
+        return compare(a.to_numview(), b.to_numview()) == 0;
     }
     bool operator!=(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) != 0;
+        return compare(a.to_numview(), b.to_numview()) != 0;
     }
     bool operator<(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) < 0;
+        return compare(a.to_numview(), b.to_numview()) < 0;
     }
     bool operator<=(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) <= 0;
+        return compare(a.to_numview(), b.to_numview()) <= 0;
     }
     bool operator>(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) > 0;
+        return compare(a.to_numview(), b.to_numview()) > 0;
     }
     bool operator>=(const num &a, const num &b)
     {
-        return detail::compare(a.to_numview(), b.to_numview()) >= 0;
+        return compare(a.to_numview(), b.to_numview()) >= 0;
     }
 
     num operator-(const num &a)
     {
-        return num(detail::negate(a.to_numview()));
+        return num(negate(a.to_numview()));
     }
 
     num operator+(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
-        return num(detail::add(c, a.to_numview(), b.to_numview()));
+        return num(add(c, a.to_numview(), b.to_numview()));
     }
 
     num operator-(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
-        return num(detail::add(c, a.to_numview(), detail::negate(b.to_numview())));
+        return num(add(c, a.to_numview(), negate(b.to_numview())));
     }
 
     num operator*(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::multiply_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, multiply_digit_estimate(a.get_n_digits(), b.get_n_digits()));
 
-        return num(detail::multiply(c, a.to_numview(), b.to_numview()));
+        return num(multiply(c, a.to_numview(), b.to_numview()));
     }
 
     num operator*(const num &a, int32_t b)
@@ -121,12 +121,12 @@ namespace rqm
             negative = true;
         }
 
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::multiply_digit_estimate(a.get_n_digits(), 1));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, multiply_digit_estimate(a.get_n_digits(), 1));
 
-        detail::numview res = detail::multiply_with_single_digit(c, a.to_numview(), bu);
+        numview res = multiply_with_single_digit(c, a.to_numview(), bu);
         if(negative)
         {
-            res = detail::negate(res);
+            res = negate(res);
         }
         return num(res);
     }
@@ -140,12 +140,12 @@ namespace rqm
             bu = -b;
             negative = true;
         }
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::quotient_digit_estimate(a.get_n_digits()));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, quotient_digit_estimate(a.get_n_digits()));
 
-        detail::numview res = detail::divide_by_single_digit(c, a.to_numview(), bu);
+        numview res = divide_by_single_digit(c, a.to_numview(), bu);
         if(negative)
         {
-            res = detail::negate(res);
+            res = negate(res);
         }
         return num(res);
     }
@@ -157,24 +157,24 @@ namespace rqm
 
     std::ostream &operator<<(std::ostream &os, const num &a)
     {
-        uint32_t buf_size = detail::to_string_buffer_estimate(a.get_n_digits());
+        uint32_t buf_size = to_string_buffer_estimate(a.get_n_digits());
         char buf[buf_size];
-        std::string_view sv = detail::to_string(&buf[buf_size], a.to_numview());
+        std::string_view sv = to_string(&buf[buf_size], a.to_numview());
         return (os << sv);
     }
 
     std::string to_string(const num &a)
     {
-        uint32_t buf_size = detail::to_string_buffer_estimate(a.get_n_digits());
+        uint32_t buf_size = to_string_buffer_estimate(a.get_n_digits());
         char buf[buf_size];
-        std::string_view sv = detail::to_string(&buf[buf_size], a.to_numview());
+        std::string_view sv = to_string(&buf[buf_size], a.to_numview());
         return std::string(sv);
     }
 
     num from_string(const std::string_view sv)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, detail::from_chars_digit_estimate(sv.size()));
-        return num(detail::from_chars(c, sv.cbegin(), sv.cend()));
+        MAKE_STACK_TEMPORARY_NUMVIEW(c, from_chars_digit_estimate(sv.size()));
+        return num(from_chars(c, sv.cbegin(), sv.cend()));
     }
 
 } // namespace rqm

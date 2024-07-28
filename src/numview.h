@@ -7,42 +7,39 @@
 
 namespace rqm
 {
-    namespace detail
+
+    /**
+       A non-owning view of a number, used for calculations.
+       The storage is borrowed from elsewhere, and must be kept alive for the duration of this view.
+     */
+    struct numview
     {
+        /**
+           Construct a number with value and borrowed storage
+         */
+        numview(uint32_t _n_digits, signum_t _signum, const digit_t *_digits)
+            : n_digits(_n_digits),
+              signum(_signum),
+              digits(const_cast<digit_t *>(_digits))
+        {}
 
         /**
-           A non-owning view of a number, used for calculations.
-           The storage is borrowed from elsewhere, and must be kept alive for the duration of this view.
+           Construct an empty number with borrowed storage provided, used for results
          */
-        struct numview
-        {
-            /**
-               Construct a number with value and borrowed storage
-             */
-            numview(uint32_t _n_digits, signum_t _signum, const digit_t *_digits)
-                : n_digits(_n_digits),
-                  signum(_signum),
-                  digits(const_cast<digit_t *>(_digits))
-            {}
+        numview(digit_t *_digits)
+            : n_digits(0),
+              signum(0),
+              digits(_digits)
+        {}
 
-            /**
-               Construct an empty number with borrowed storage provided, used for results
-             */
-            numview(digit_t *_digits)
-                : n_digits(0),
-                  signum(0),
-                  digits(_digits)
-            {}
-
-            uint32_t n_digits;
-            signum_t signum;
-            digit_t *digits;
-        };
-    } // namespace detail
+        uint32_t n_digits;
+        signum_t signum;
+        digit_t *digits;
+    };
 
 #define MAKE_STACK_TEMPORARY_NUMVIEW(name, n_digits)                                                                                                                                                   \
-    detail::digit_t name##_storage[(n_digits)];                                                                                                                                                        \
-    detail::numview name(name##_storage)
+    digit_t name##_storage[(n_digits)];                                                                                                                                                                \
+    numview name(name##_storage)
 
 } // namespace rqm
 

@@ -3,21 +3,16 @@
 
 #include <cstdint>
 #include <cstring>
-#include <istream>
-#include <limits>
-#include <ostream>
-#include <stdexcept>
+#include <iosfwd>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "rqm/digit.h"
 namespace rqm
 {
 
-    namespace detail
-    {
-        struct numview;
-    }
-
+    struct numview;
     /**
        big integer class
 
@@ -45,8 +40,8 @@ namespace rqm
         num(const num &o) // copy constructor
         {
             signum = o.signum;
-            detail::digit_t *ptr = setup_storage(o.n_digits);
-            std::memcpy(ptr, o.digits(), n_digits * sizeof(detail::digit_t));
+            digit_t *ptr = setup_storage(o.n_digits);
+            std::memcpy(ptr, o.digits(), n_digits * sizeof(digit_t));
         }
 
         num(num &&o) noexcept // move constructor
@@ -54,8 +49,8 @@ namespace rqm
             signum = o.signum;
             if(o.stored_inline())
             {
-                detail::digit_t *ptr = setup_storage(o.n_digits);
-                std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(detail::digit_t));
+                digit_t *ptr = setup_storage(o.n_digits);
+                std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(digit_t));
             } else
             {
                 n_digits = o.n_digits;
@@ -82,7 +77,7 @@ namespace rqm
                 if(o.stored_inline())
                 {
                     n_digits = o.n_digits;
-                    std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(detail::digit_t));
+                    std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(digit_t));
                 } else
                 {
                     std::swap(n_digits, o.n_digits);
@@ -92,9 +87,9 @@ namespace rqm
             return *this;
         }
 
-        explicit num(detail::numview o);
+        explicit num(numview o);
 
-        detail::numview to_numview() const;
+        numview to_numview() const;
 
         num(int64_t value);
         int64_t to_int64_t() const;
@@ -110,21 +105,21 @@ namespace rqm
                 return u.digits_inline;
             } else
             {
-                return (u.digits_ptr = new detail::digit_t[_n_digits]);
+                return (u.digits_ptr = new digit_t[_n_digits]);
             }
         }
 
         static constexpr uint32_t n_inline_digits = 2;
 
         bool stored_inline() const { return n_digits <= n_inline_digits; }
-        const detail::digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
+        const digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
 
         uint32_t n_digits;
-        detail::signum_t signum;
+        signum_t signum;
         union
         {
-            detail::digit_t *digits_ptr;
-            detail::digit_t digits_inline[n_inline_digits];
+            digit_t *digits_ptr;
+            digit_t digits_inline[n_inline_digits];
         } u;
     };
 
