@@ -163,9 +163,8 @@ RC_GTEST_PROP(RQM, from_string, (int64_t ia))
     RC_ASSERT(a == ia);
 }
 
-RC_GTEST_PROP(RQM, repeated_doubling, (uint16_t n_times))
+RC_GTEST_PROP(RQM, repeated_doubling, (uint8_t n_times))
 {
-    RC_PRE(n_times < 1024); // let's stay within 1024 bits
     rqm::num v = 2;
     uint64_t n_bits = 1;
     for(uint32_t i = 0; i < n_times; ++i)
