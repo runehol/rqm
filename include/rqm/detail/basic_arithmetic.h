@@ -11,7 +11,7 @@ namespace rqm
     namespace detail
     {
         template<typename T>
-        static inline signum_t compare_signum(T a, T b)
+        [[nodiscard]] static inline signum_t compare_signum(T a, T b)
         {
             if(a < b) return -1;
             if(a > b) return 1;
@@ -19,13 +19,13 @@ namespace rqm
         }
 
         template<typename T>
-        static inline signum_t internal_compare_unequal(T a, T b)
+        [[nodiscard]] static inline signum_t internal_compare_unequal(T a, T b)
         {
             return a > b ? 1 : -1;
         }
 
         // compare a and b, assuming both are positive. this function ignores the signs in the view
-        static inline signum_t abs_compare(const numview a, const numview b)
+        [[nodiscard]] static inline signum_t abs_compare(const numview a, const numview b)
         {
             if(a.n_digits != b.n_digits)
             {
@@ -39,7 +39,7 @@ namespace rqm
             return 0;
         }
 
-        static inline signum_t compare(const numview a, const numview b)
+        [[nodiscard]] static inline signum_t compare(const numview a, const numview b)
         {
             // if not the same size, return the difference of the signs
             if(a.signum != b.signum) return internal_compare_unequal(a.signum, b.signum);
@@ -48,32 +48,32 @@ namespace rqm
             return a.signum * abs_compare(a, b);
         }
 
-        static inline numview negate(numview a)
+        [[nodiscard]] static inline numview negate(numview a)
         {
             a.signum = -a.signum;
             return a;
         }
 
-        static inline numview abs(numview a)
+        [[nodiscard]] static inline numview abs(numview a)
         {
             a.signum = std::abs(a.signum);
             return a;
         }
 
-        static inline numview with_signum(signum_t signum, numview a)
+        [[nodiscard]] static inline numview with_signum(signum_t signum, numview a)
         {
             a.signum = signum;
             return a;
         }
 
-        static inline numview with_sign_unless_zero(signum_t signum, numview a)
+        [[nodiscard]] static inline numview with_sign_unless_zero(signum_t signum, numview a)
         {
             a.signum = signum;
             if(a.n_digits == 0) a.signum = 0;
             return a;
         }
 
-        static inline numview remove_high_zeros(numview c)
+        [[nodiscard]] static inline numview remove_high_zeros(numview c)
         {
             // adjust down after cancellation
             while(c.n_digits > 0 && c.digits[c.n_digits - 1] == 0)
@@ -84,7 +84,7 @@ namespace rqm
         }
 
         // add a and b, assuming both are positive. this function ignores the signs in the view
-        static inline numview abs_add(numview c, const numview a, const numview b)
+        [[nodiscard]] static inline numview abs_add(numview c, const numview a, const numview b)
         {
             c.n_digits = 0;
             double_digit_t carry = 0;
@@ -123,7 +123,7 @@ namespace rqm
         }
 
         // subtract b from a, assuming a is larger than b. this function ignores the signs in the view
-        static inline numview abs_subtract_a_larger_than_b(numview c, const numview a, const numview b)
+        [[nodiscard]] static inline numview abs_subtract_a_larger_than_b(numview c, const numview a, const numview b)
         {
             c.n_digits = 0;
             double_digit_t carry = 0;
@@ -152,7 +152,7 @@ namespace rqm
             return remove_high_zeros(c);
         }
 
-        static inline numview add(numview c, numview a, numview b)
+        [[nodiscard]] static inline numview add(numview c, numview a, numview b)
         {
             // take care of zero cases
             if(a.signum == 0) return b;
@@ -181,17 +181,17 @@ namespace rqm
             }
         }
 
-        static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+        [[nodiscard]] static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
         {
             return std::max(a_digits, b_digits) + 1;
         }
 
-        static inline uint32_t multiply_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+        [[nodiscard]] static inline uint32_t multiply_digit_estimate(uint32_t a_digits, uint32_t b_digits)
         {
             return a_digits + b_digits;
         }
 
-        static inline numview zero_with_n_digits(numview c, uint32_t n_digits)
+        [[nodiscard]] static inline numview zero_with_n_digits(numview c, uint32_t n_digits)
         {
             // set it all to zero
             c.n_digits = n_digits;
@@ -200,7 +200,7 @@ namespace rqm
         }
 
         // multiply of positive numbers, ignoring sign. prefer a large and b small
-        static inline numview abs_multiply(numview c, const numview a, const numview b)
+        [[nodiscard]] static inline numview abs_multiply(numview c, const numview a, const numview b)
         {
             c = zero_with_n_digits(c, multiply_digit_estimate(a.n_digits, b.n_digits));
 
@@ -226,7 +226,7 @@ namespace rqm
             return remove_high_zeros(c);
         }
 
-        static inline numview multiply(numview c, const numview a, const numview b)
+        [[nodiscard]] static inline numview multiply(numview c, const numview a, const numview b)
         {
             if(a.signum == 0) return numview::zero();
             if(b.signum == 0) return numview::zero();
@@ -234,7 +234,7 @@ namespace rqm
             return with_signum(a.signum * b.signum, abs_multiply(c, a, b));
         }
 
-        static inline numview multiply_with_single_digit(numview c, const numview a, digit_t b)
+        [[nodiscard]] static inline numview multiply_with_single_digit(numview c, const numview a, digit_t b)
         {
             if(a.signum == 0) return numview::zero();
             if(b == 0) return numview::zero();
@@ -255,12 +255,12 @@ namespace rqm
             return c;
         }
 
-        static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits)
+        [[nodiscard]] static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits)
         {
             return dividend_digits;
         }
 
-        static inline numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32)
+        [[nodiscard]] static inline numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32)
         {
 
             quotient = zero_with_n_digits(quotient, dividend.n_digits);
@@ -286,7 +286,7 @@ namespace rqm
             return remove_high_zeros(quotient);
         }
 
-        static inline numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
+        [[nodiscard]] static inline numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
         {
             if(divisor == 0) throw std::out_of_range("divide by zero");
             if(dividend.signum == 0) return numview::zero();

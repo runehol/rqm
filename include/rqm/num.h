@@ -5,10 +5,12 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <ostream>
 #include <stdexcept>
 #include <utility>
 
 #include "rqm/detail/basic_arithmetic.h"
+#include "rqm/detail/string_conversion.h"
 
 namespace rqm
 {
@@ -250,6 +252,22 @@ namespace rqm
     static inline num operator*(int32_t a, const num &b)
     {
         return b * a;
+    }
+
+    static inline std::ostream &operator<<(std::ostream &os, const num &a)
+    {
+        uint32_t buf_size = detail::to_string_buffer_estimate(a.get_n_digits());
+        char buf[buf_size];
+        std::string_view sv = detail::to_string(&buf[buf_size], a.to_numview());
+        return (os << sv);
+    }
+
+    static inline std::string to_string(const num &a)
+    {
+        uint32_t buf_size = detail::to_string_buffer_estimate(a.get_n_digits());
+        char buf[buf_size];
+        std::string_view sv = detail::to_string(&buf[buf_size], a.to_numview());
+        return std::string(sv);
     }
 
 } // namespace rqm

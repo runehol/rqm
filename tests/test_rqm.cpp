@@ -121,3 +121,19 @@ RC_GTEST_PROP(RQM, divide_num_with_digit, (int64_t ia, int32_t ib32))
     rqm::num quotient = a / ib;
     RC_ASSERT(quotient == (ia / ib));
 }
+
+RC_GTEST_PROP(RQM, divide_by_itself, (int32_t ia))
+{
+    RC_PRE(ia != 0);
+    rqm::num a = ia;
+    rqm::num quotient = a / ia;
+    RC_ASSERT(quotient == 1);
+}
+
+RC_GTEST_PROP(RQM, to_string, (int64_t ia))
+{
+    rqm::num a = ia;
+    std::string as = rqm::to_string(a);
+    std::string ias = std::to_string(ia);
+    RC_ASSERT(as == ias);
+}
