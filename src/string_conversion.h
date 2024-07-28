@@ -1,7 +1,7 @@
 #ifndef RQM_DETAIL_STRING_CONVERSION_H
 #define RQM_DETAIL_STRING_CONVERSION_H
 
-#include "rqm/detail/basic_arithmetic.h"
+#include "basic_arithmetic.h"
 #include <algorithm>
 #include <cassert>
 #include <charconv>

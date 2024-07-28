@@ -1,5 +1,4 @@
 #include "rqm/num.h"
-#include "rqm/detail/numview.h"
 #include <cstdint>
 #include <cstring>
 #include <istream>
@@ -8,8 +7,9 @@
 #include <stdexcept>
 #include <utility>
 
-#include "rqm/detail/basic_arithmetic.h"
-#include "rqm/detail/string_conversion.h"
+#include "basic_arithmetic.h"
+#include "numview.h"
+#include "string_conversion.h"
 
 namespace rqm
 {

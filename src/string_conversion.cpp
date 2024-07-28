@@ -1,6 +1,6 @@
 
-#include "rqm/detail/string_conversion.h"
-#include "rqm/detail/basic_arithmetic.h"
+#include "string_conversion.h"
+#include "basic_arithmetic.h"
 #include <algorithm>
 #include <cassert>
 #include <charconv>
