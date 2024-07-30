@@ -18,6 +18,7 @@ namespace rqm
     {
         signum = compare_signum(value, int64_t(0));
         int64_t abs_value = std::abs(value);
+        is_stored_inline = true;
         u.digits_inline[0] = abs_value & 0xffffffff;
         u.digits_inline[1] = abs_value >> 32;
         uint32_t digs = 2;
@@ -48,6 +49,13 @@ namespace rqm
     {
         digit_t *ptr = setup_storage(o.n_digits);
         std::memcpy(ptr, o.digits, n_digits * sizeof(digit_t));
+    }
+
+    void num::update_signum_n_digits(numview o)
+    {
+        signum = o.signum;
+        n_digits = o.n_digits;
+        assert(digits() == o.digits);
     }
 
     numview num::to_numview() const
@@ -92,23 +100,23 @@ namespace rqm
 
     num operator+(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
-
-        return num(add(c, a.to_numview(), b.to_numview()));
+        num c(num::empty_with_n_digits(), add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        c.update_signum_n_digits(add(c.to_numview(), a.to_numview(), b.to_numview()));
+        return c;
     }
 
     num operator-(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
-
-        return num(add(c, a.to_numview(), negate(b.to_numview())));
+        num c(num::empty_with_n_digits(), add_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        c.update_signum_n_digits(add(c.to_numview(), a.to_numview(), negate(b.to_numview())));
+        return c;
     }
 
     num operator*(const num &a, const num &b)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, multiply_digit_estimate(a.get_n_digits(), b.get_n_digits()));
-
-        return num(multiply(c, a.to_numview(), b.to_numview()));
+        num c(num::empty_with_n_digits(), multiply_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        c.update_signum_n_digits(multiply(c.to_numview(), a.to_numview(), b.to_numview()));
+        return c;
     }
 
     num operator*(const num &a, int32_t b)
@@ -121,14 +129,15 @@ namespace rqm
             negative = true;
         }
 
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, multiply_digit_estimate(a.get_n_digits(), 1));
+        num c(num::empty_with_n_digits(), multiply_digit_estimate(a.get_n_digits(), 1));
 
-        numview res = multiply_with_single_digit(c, a.to_numview(), bu);
+        numview res = multiply_with_single_digit(c.to_numview(), a.to_numview(), bu);
         if(negative)
         {
             res = negate(res);
         }
-        return num(res);
+        c.update_signum_n_digits(res);
+        return c;
     }
 
     num operator/(const num &a, int32_t b)
@@ -140,14 +149,15 @@ namespace rqm
             bu = -b;
             negative = true;
         }
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, quotient_digit_estimate(a.get_n_digits()));
+        num c(num::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits()));
 
-        numview res = divide_by_single_digit(c, a.to_numview(), bu);
+        numview res = divide_by_single_digit(c.to_numview(), a.to_numview(), bu);
         if(negative)
         {
             res = negate(res);
         }
-        return num(res);
+        c.update_signum_n_digits(res);
+        return c;
     }
 
     num operator*(int32_t a, const num &b)
@@ -173,8 +183,10 @@ namespace rqm
 
     num from_string(const std::string_view sv)
     {
-        MAKE_STACK_TEMPORARY_NUMVIEW(c, from_chars_digit_estimate(sv.size()));
-        return num(from_chars(c, sv.cbegin(), sv.cend()));
+        num c(num::empty_with_n_digits(), from_chars_digit_estimate(sv.size()));
+
+        c.update_signum_n_digits(from_chars(c.to_numview(), sv.cbegin(), sv.cend()));
+        return c;
     }
 
 } // namespace rqm

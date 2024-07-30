@@ -22,9 +22,13 @@ namespace rqm
     class num
     {
     public:
+        class empty_with_n_digits
+        {};
+
         // this class allocates, so we need the rule of five
         num()
             : n_digits(0),
+              is_stored_inline(true),
               signum(0)
         {}
 
@@ -37,6 +41,12 @@ namespace rqm
             }
         }
 
+        num(empty_with_n_digits, uint32_t _n_digits)
+        {
+            setup_storage(_n_digits);
+            signum = 0;
+        }
+
         num(const num &o) // copy constructor
         {
             signum = o.signum;
@@ -47,12 +57,14 @@ namespace rqm
         num(num &&o) noexcept // move constructor
         {
             signum = o.signum;
-            if(o.stored_inline())
+            is_stored_inline = o.stored_inline();
+            if(is_stored_inline)
             {
                 digit_t *ptr = setup_storage(o.n_digits);
                 std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(digit_t));
             } else
             {
+
                 n_digits = o.n_digits;
                 u.digits_ptr = std::exchange(o.u.digits_ptr, nullptr);
             }
@@ -74,7 +86,8 @@ namespace rqm
                 }
                 u.digits_ptr = nullptr;
 
-                if(o.stored_inline())
+                is_stored_inline = o.stored_inline();
+                if(is_stored_inline)
                 {
                     n_digits = o.n_digits;
                     std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(digit_t));
@@ -96,11 +109,14 @@ namespace rqm
 
         uint32_t get_n_digits() const { return n_digits; }
 
+        void update_signum_n_digits(numview o);
+
     private:
         uint32_t *setup_storage(size_t _n_digits)
         {
             n_digits = _n_digits;
-            if(_n_digits <= n_inline_digits)
+            is_stored_inline = _n_digits <= n_inline_digits;
+            if(is_stored_inline)
             {
                 return u.digits_inline;
             } else
@@ -109,13 +125,14 @@ namespace rqm
             }
         }
 
-        static constexpr uint32_t n_inline_digits = 2;
+        static constexpr uint32_t n_inline_digits = 6;
 
-        bool stored_inline() const { return n_digits <= n_inline_digits; }
+        bool stored_inline() const { return is_stored_inline; }
         const digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
 
         uint32_t n_digits;
-        signum_t signum;
+        bool is_stored_inline;
+        int16_t signum;
         union
         {
             digit_t *digits_ptr;
