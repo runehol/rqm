@@ -9,7 +9,7 @@ namespace rqm
     using signum_t = int32_t; // sign as -1, 0, 1 representation
 
     using digit_t = uint32_t;
-    static constexpr uint32_t n_digit_bits = sizeof(digit_t) * 8;
+    static constexpr uint32_t n_bits_in_digit = sizeof(digit_t) * 8;
 
     // if std::log10 had been constexpr, these could have been defined directly. alas not
     static constexpr uint32_t n_decimals_in_digit_low = 9;   // std::floor(std::log10(std::numeric_limits<digit_t>::max()));

@@ -38,7 +38,7 @@ namespace rqm
         const digit_t *ptr = digits();
         for(uint32_t idx = 0; idx < n_digits; ++idx)
         {
-            v |= uint64_t(ptr[idx]) << (idx * n_digit_bits);
+            v |= uint64_t(ptr[idx]) << (idx * n_bits_in_digit);
         }
         if(v > std::numeric_limits<int64_t>::max()) throw std::overflow_error("Out of range for an int64_t");
         return v * signum;

@@ -120,13 +120,13 @@ namespace rqm
 
     [[nodiscard]] static inline uint32_t shift_left_digit_estimate(uint32_t a_digits, uint32_t left_shift_amount)
     {
-        return a_digits + cdiv<uint64_t>(left_shift_amount, n_digit_bits);
+        return a_digits + cdiv<uint64_t>(left_shift_amount, n_bits_in_digit);
     }
 
     [[nodiscard]] static inline uint32_t shift_right_digit_estimate(uint32_t a_digits, uint32_t right_shift_amount)
     {
         // make sure we always have one digit present, just in case.
-        return std::max<int64_t>(1, a_digits - right_shift_amount / n_digit_bits);
+        return std::max<int64_t>(1, a_digits - right_shift_amount / n_bits_in_digit);
     }
 
     [[nodiscard]] numview shift_left(numview c, const numview a, uint32_t shift_amount);

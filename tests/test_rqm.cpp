@@ -196,7 +196,7 @@ RC_GTEST_PROP(RQM, repeated_doubling, (uint8_t n_times))
         v = v * 2;
         ++n_bits;
     }
-    uint32_t expected_n_digits = 1 + n_bits / rqm::n_digit_bits;
+    uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
     RC_ASSERT(v.get_n_digits() == expected_n_digits);
 }
@@ -211,7 +211,7 @@ RC_GTEST_PROP(RQM, repeated_squaring, (uint8_t n_times))
         v = v * v;
         n_bits *= 2;
     }
-    uint32_t expected_n_digits = 1 + n_bits / rqm::n_digit_bits;
+    uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
     RC_ASSERT(v.get_n_digits() == expected_n_digits);
 }

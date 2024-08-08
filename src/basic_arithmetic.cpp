@@ -46,21 +46,21 @@ namespace rqm
         {
             double_digit_t v = double_digit_t(*a_ptr++) + double_digit_t(*b_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = v >> n_digit_bits;
+            carry = v >> n_bits_in_digit;
         }
 
         while(a_ptr < a_end)
         {
             double_digit_t v = double_digit_t(*a_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = v >> n_digit_bits;
+            carry = v >> n_bits_in_digit;
         }
 
         while(b_ptr < b_end)
         {
             double_digit_t v = double_digit_t(*b_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = v >> n_digit_bits;
+            carry = v >> n_bits_in_digit;
         }
         if(carry != 0)
         {
@@ -83,7 +83,7 @@ namespace rqm
         {
             double_digit_t v = double_digit_t(*a_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = v >> n_digit_bits;
+            carry = v >> n_bits_in_digit;
         }
 
         if(carry != 0)
@@ -108,7 +108,7 @@ namespace rqm
         {
             double_digit_t v = double_digit_t(*a_ptr++) - double_digit_t(*b_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = signed_double_digit_t(v) >> n_digit_bits;
+            carry = signed_double_digit_t(v) >> n_bits_in_digit;
         }
         assert(b_ptr == b_end);
 
@@ -116,7 +116,7 @@ namespace rqm
         {
             double_digit_t v = double_digit_t(*a_ptr++) + carry;
             c.digits[c.n_digits++] = v;
-            carry = signed_double_digit_t(v) >> n_digit_bits;
+            carry = signed_double_digit_t(v) >> n_bits_in_digit;
         }
 
         assert(carry == 0);
@@ -167,13 +167,13 @@ namespace rqm
             {
                 double_digit_t v = double_digit_t(a.digits[a_idx]) * b_val + carry + double_digit_t(c.digits[c_idx]);
                 c.digits[c_idx++] = v;
-                carry = v >> n_digit_bits;
+                carry = v >> n_bits_in_digit;
             }
             while(carry != 0)
             {
                 double_digit_t v = carry + double_digit_t(c.digits[c_idx]);
                 c.digits[c_idx++] = v;
-                carry = v >> n_digit_bits;
+                carry = v >> n_bits_in_digit;
             }
         }
 
@@ -200,7 +200,7 @@ namespace rqm
         {
             double_digit_t v = double_digit_t(a.digits[a_idx]) * b_val + carry;
             c.digits[c.n_digits++] = v;
-            carry = v >> n_digit_bits;
+            carry = v >> n_bits_in_digit;
         }
         if(carry != 0)
         {
@@ -219,14 +219,14 @@ namespace rqm
 
         for(int32_t idx = dividend.n_digits - 1; idx >= 0; --idx)
         {
-            assert(remainder < (1ull << n_digit_bits));
-            remainder = (remainder << n_digit_bits) | dividend.digits[idx];
+            assert(remainder < (1ull << n_bits_in_digit));
+            remainder = (remainder << n_bits_in_digit) | dividend.digits[idx];
             double_digit_t q = remainder / divisor;
             remainder = remainder % divisor;
-            assert(q < (1ull << n_digit_bits));
+            assert(q < (1ull << n_bits_in_digit));
             quotient.digits[idx] = q;
         }
-        assert(remainder < (1ull << n_digit_bits));
+        assert(remainder < (1ull << n_bits_in_digit));
         if(remainder_ptr != nullptr)
         {
             *remainder_ptr = remainder;
@@ -247,8 +247,8 @@ namespace rqm
         if(a.signum == 0) return zero_out(c);
         c.signum = a.signum;
 
-        uint32_t shift_whole_digits = shift_amount / n_digit_bits;
-        uint32_t shift_left_within_digits = shift_amount % n_digit_bits;
+        uint32_t shift_whole_digits = shift_amount / n_bits_in_digit;
+        uint32_t shift_left_within_digits = shift_amount % n_bits_in_digit;
 
         c.n_digits = 0;
         for(uint32_t idx = 0; idx < shift_whole_digits; ++idx)
@@ -264,7 +264,7 @@ namespace rqm
             }
         } else
         {
-            uint32_t shift_right_within_digits = n_digit_bits - shift_left_within_digits;
+            uint32_t shift_right_within_digits = n_bits_in_digit - shift_left_within_digits;
             digit_t extra = 0;
             for(uint32_t idx = 0; idx < a.n_digits; ++idx)
             {
@@ -284,9 +284,9 @@ namespace rqm
     {
         if(a.signum == 0) return zero_out(c);
 
-        uint64_t shift_whole_digits = shift_amount / n_digit_bits;
-        uint32_t shift_right_within_digits = shift_amount % n_digit_bits;
-        uint32_t shift_left_within_digits = n_digit_bits - shift_right_within_digits;
+        uint64_t shift_whole_digits = shift_amount / n_bits_in_digit;
+        uint32_t shift_right_within_digits = shift_amount % n_bits_in_digit;
+        uint32_t shift_left_within_digits = n_bits_in_digit - shift_right_within_digits;
 
         digit_t extra = 0;
         c.n_digits = std::max<int64_t>(0, a.n_digits - shift_whole_digits);
