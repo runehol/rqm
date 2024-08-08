@@ -159,6 +159,26 @@ namespace rqm
     num operator<<(const num &a, uint32_t b);
     num operator>>(const num &a, uint32_t b);
 
+    // simple inline implementations of the pre/post increment/decrement operators. could be optimised further if necessary
+    static inline num &operator++(num &a)
+    {
+        a = a + 1;
+        return a;
+    }
+    static inline num &operator--(num &a)
+    {
+        a = a - 1;
+        return a;
+    }
+    static inline num operator++(num &a, int)
+    {
+        return a + 1;
+    }
+    static inline num operator--(num &a, int)
+    {
+        return a - 1;
+    }
+
     std::ostream &operator<<(std::ostream &os, const num &a);
     std::string to_string(const num &a);
     num from_string(const std::string_view sv);

@@ -243,3 +243,32 @@ RC_GTEST_PROP(RQM, shift_left_right_returns_same, (int64_t ia, uint16_t ib))
     rqm::num a3 = a2 >> ib;
     RC_ASSERT(a == a3);
 }
+
+RC_GTEST_PROP(RQM, pre_increment, (int64_t ia))
+{
+    rqm::num a = ia;
+    ++a;
+    RC_ASSERT(a == rqm::num(ia) + 1);
+}
+
+RC_GTEST_PROP(RQM, pre_decrement, (int64_t ia))
+{
+    rqm::num a = ia;
+    --a;
+    RC_ASSERT(a == rqm::num(ia) - 1);
+}
+
+RC_GTEST_PROP(RQM, post_increment, (int64_t ia))
+{
+    rqm::num a = ia;
+    rqm::num b = a++;
+    RC_ASSERT(a == ia);
+    RC_ASSERT(b == rqm::num(ia) + 1);
+}
+RC_GTEST_PROP(RQM, post_decrement, (int64_t ia))
+{
+    rqm::num a = ia;
+    rqm::num b = a--;
+    RC_ASSERT(a == ia);
+    RC_ASSERT(b == rqm::num(ia) - 1);
+}
