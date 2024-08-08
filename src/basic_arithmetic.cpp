@@ -312,17 +312,15 @@ namespace rqm
         // arithmetic shift right is a flooring division. therefore, if we have a negative a, we should add 1 to the magnitude (in sign-magnitude representation) if we shift out any 1 bits
         if(a.signum == -1)
         {
-            bool round_up = false;
-            for(uint32_t idx = 0; idx < shift_whole_digits && idx < a.n_digits; ++idx)
+            bool round_up = extra != 0;
+            if(!round_up)
             {
-                round_up = a.digits[idx] != 0;
-                if(round_up) break;
+                for(uint32_t idx = 0; idx < shift_whole_digits && idx < a.n_digits; ++idx)
+                {
+                    round_up = a.digits[idx] != 0;
+                    if(round_up) break;
+                }
             }
-            if(!round_up && shift_whole_digits < a.n_digits)
-            {
-                round_up = (a.digits[shift_whole_digits] & ((1 << shift_right_within_digits) - 1)) != 0;
-            }
-
             if(round_up)
             {
                 // a little naughty, our routines are generally not resistant against aliasing. but this one is safe
