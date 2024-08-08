@@ -164,12 +164,42 @@ RC_GTEST_PROP(RQM, divide_num_with_digit, (int64_t ia, int32_t ib32))
     RC_ASSERT(quotient == (ia / ib));
 }
 
-RC_GTEST_PROP(RQM, divide_by_itself, (int32_t ia))
+RC_GTEST_PROP(RQM, divide_with_digit_by_itself, (int32_t ia))
 {
     RC_PRE(ia != 0);
     rqm::num a = ia;
     rqm::num quotient = a / ia;
     RC_ASSERT(quotient == 1);
+}
+
+RC_GTEST_PROP(RQM, divide, (int64_t ia, int64_t ib))
+{
+    RC_PRE(ib != 0);
+    RC_PRE(!(ib == -1 && ia == std::numeric_limits<int64_t>::min()));
+    rqm::num a = ia;
+    rqm::num b = ib;
+    rqm::num quotient = a / b;
+    RC_ASSERT(quotient == (ia / ib));
+}
+
+RC_GTEST_PROP(RQM, divide_by_itself, (int64_t ia))
+{
+    RC_PRE(ia != 0);
+    rqm::num a = ia;
+    rqm::num quotient = a / a;
+    RC_ASSERT(quotient == 1);
+}
+
+RC_GTEST_PROP(RQM, multiply_divide, (int64_t ia, int64_t ib, int64_t ic, int64_t id))
+{
+    RC_PRE(ic != 0);
+    RC_PRE(id != 0);
+    rqm::num exp = rqm::num(ia) * rqm::num(ib);
+    rqm::num divisor = rqm::num(ic) * rqm::num(id);
+    rqm::num dividend = exp * divisor;
+    rqm::num quotient = dividend / divisor;
+
+    RC_ASSERT(quotient == exp);
 }
 
 RC_GTEST_PROP(RQM, to_string, (int64_t ia))

@@ -103,14 +103,16 @@ namespace rqm
 
     [[nodiscard]] numview multiply_with_single_digit(numview c, const numview a, digit_t b);
 
-    [[nodiscard]] static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits)
+    [[nodiscard]] static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits, uint32_t divisor_digits)
     {
-        return dividend_digits;
+        return dividend_digits - divisor_digits + 1;
     }
 
     [[nodiscard]] numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32);
 
     [[nodiscard]] numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor);
+
+    [[nodiscard]] numview divmod(numview quotient, numview *remainder, const numview dividend, const numview divisor);
 
     template<typename T>
     T cdiv(T a, T b)

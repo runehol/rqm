@@ -149,6 +149,29 @@ static void GMP_mul_num_with_digit(benchmark::State &state)
 
 BENCHMARK(GMP_mul_num_with_digit);
 
+static void GMP_div(benchmark::State &state)
+{
+    mpz_t a, b, c;
+    mpz_inits(a, b, c, nullptr);
+
+    // Perform setup here
+    mpz_set_str(a, "0x123456789", 0);
+    mpz_set_str(b, "0x12345678", 0);
+
+    benchmark::DoNotOptimize(a);
+    benchmark::DoNotOptimize(b);
+    for(auto _: state)
+    {
+        // This code gets timed
+        mpz_tdiv_q(c, a, b);
+        benchmark::DoNotOptimize(c);
+    }
+    assert(to_string(c) == "16");
+    mpz_clears(a, c, nullptr);
+}
+
+BENCHMARK(GMP_div);
+
 static void GMP_div_num_with_digit(benchmark::State &state)
 {
     mpz_t a, c;

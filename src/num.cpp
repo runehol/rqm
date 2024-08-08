@@ -149,7 +149,7 @@ namespace rqm
             bu = -b;
             negative = true;
         }
-        num c(num::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits()));
+        num c(num::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits(), 1));
 
         numview res = divide_by_single_digit(c.to_numview(), a.to_numview(), bu);
         if(negative)
@@ -157,6 +157,13 @@ namespace rqm
             res = negate(res);
         }
         c.update_signum_n_digits(res);
+        return c;
+    }
+
+    num operator/(const num &a, const num &b)
+    {
+        num c(num::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits(), 1));
+        c.update_signum_n_digits(divmod(c.to_numview(), nullptr, a.to_numview(), b.to_numview()));
         return c;
     }
 

@@ -7,6 +7,11 @@
 namespace rqm
 {
 
+    static digit_t countl_zero(digit_t x)
+    {
+        return __builtin_clz(x);
+    }
+
     // compare a and b, assuming both are positive. this function ignores the signs in the view
     [[nodiscard]] static signum_t abs_compare(const numview a, const numview b)
     {
@@ -95,6 +100,7 @@ namespace rqm
     }
 
     // subtract b from a, assuming a is larger than b. this function ignores the signs in the view
+    // okay to alias a and c, as long as a is large enough.
     [[nodiscard]] numview abs_subtract_a_larger_than_b(numview c, const numview a, const numview b)
     {
         c.n_digits = 0;
@@ -240,6 +246,87 @@ namespace rqm
         if(divisor == 0) throw std::out_of_range("divide by zero");
         if(dividend.signum == 0) return zero_out(quotient);
         return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
+    }
+
+    [[nodiscard]] static numview divmod_normalised(numview quotient, numview *remainder, numview dividend, const numview divisor)
+    {
+        assert(dividend.n_digits > 0);
+        assert(divisor.n_digits > 0);
+        assert(dividend.n_digits >= divisor.n_digits);
+        digit_t msb_divisor = divisor.digits[divisor.n_digits - 1];
+        digit_t nextsb_divisor = divisor.n_digits >= 2 ? divisor.digits[divisor.n_digits - 2] : 0;
+        assert((msb_divisor & (1 << (n_bits_in_digit - 1))) != 0); // has been normalised
+
+        // now let's go with Knuth's algorithm for division of non-negative integers, Art of Computer Programming Volume 2, 4.3, Algorithm D
+
+        uint32_t n = divisor.n_digits;
+        uint32_t m = dividend.n_digits - n - 1;
+
+        MAKE_STACK_TEMPORARY_NUMVIEW(qv, n + 1);
+
+        constexpr double_digit_t b = double_digit_t(1) << n_bits_in_digit;
+        for(int32_t j = m; j >= 0; j--)
+        {
+            double_digit_t dividend2 = (double_digit_t(dividend.digits[j + n]) << n_bits_in_digit) | double_digit_t(dividend.digits[j + n - 1]);
+            double_digit_t q_hat = dividend2 / msb_divisor;
+            double_digit_t r_hat = dividend2 % msb_divisor;
+
+            double_digit_t u_jn_2 = j + n >= 2 ? dividend.digits[j + n - 2] : 0;
+
+            while(q_hat == b || q_hat * nextsb_divisor > b * r_hat + u_jn_2)
+            {
+                --q_hat;
+                r_hat += msb_divisor;
+
+                if(r_hat >= b) break;
+            }
+
+            numview dividend_until_j = dividend;
+            dividend_until_j.digits += j;
+            dividend_until_j.n_digits = n + 1;
+
+            qv = multiply_with_single_digit(qv, divisor, q_hat);
+            while(abs_compare(dividend_until_j, qv) < 0)
+            {
+                --q_hat;
+                r_hat += msb_divisor;
+                qv = multiply_with_single_digit(qv, divisor, q_hat);
+            }
+
+            quotient.digits[j] = q_hat;
+            dividend_until_j = abs_subtract_a_larger_than_b(dividend_until_j, dividend_until_j, qv);
+        }
+        quotient.n_digits = m + 1;
+        *remainder = remove_high_zeros(dividend);
+        return with_sign_unless_zero(dividend.signum * divisor.signum, remove_high_zeros(quotient));
+    }
+
+    [[nodiscard]] numview divmod(numview quotient, numview *remainder, const numview dividend, const numview divisor)
+    {
+        if(divisor.signum == 0) throw std::out_of_range("divide by zero");
+        if(dividend.signum == 0 || divisor.n_digits > dividend.n_digits)
+        {
+            if(remainder != nullptr) *remainder = zero_out(*remainder);
+            return zero_out(quotient);
+        }
+        uint32_t normalization_shift = countl_zero(divisor.digits[divisor.n_digits - 1]);
+        MAKE_STACK_TEMPORARY_NUMVIEW(norm_dividend, dividend.n_digits + 1);
+        MAKE_STACK_TEMPORARY_NUMVIEW(norm_divisor, divisor.n_digits); // won't overflow
+        MAKE_STACK_TEMPORARY_NUMVIEW(norm_remainder, divisor.n_digits);
+        norm_dividend = shift_left(norm_dividend, dividend, normalization_shift);
+        norm_divisor = shift_left(norm_divisor, divisor, normalization_shift);
+
+        if(norm_dividend.n_digits == dividend.n_digits)
+        {
+            norm_dividend.digits[norm_dividend.n_digits++] = 0; // put an extra zero in there, the divmod_normalised algorithm needs it
+        }
+
+        quotient = divmod_normalised(quotient, &norm_remainder, norm_dividend, norm_divisor);
+        if(remainder != nullptr)
+        {
+            *remainder = shift_right(*remainder, norm_remainder, normalization_shift);
+        }
+        return quotient;
     }
 
     [[nodiscard]] numview shift_left(numview c, const numview a, uint32_t shift_amount)

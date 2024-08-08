@@ -155,6 +155,26 @@ static void RQM_mul_num_with_digit(benchmark::State &state)
 
 BENCHMARK(RQM_mul_num_with_digit);
 
+static void RQM_div(benchmark::State &state)
+{
+    // Perform setup here
+    rqm::num a = 0x123456789;
+    rqm::num c;
+    rqm::num b = 0x12345678;
+
+    benchmark::DoNotOptimize(a);
+    benchmark::DoNotOptimize(b);
+    for(auto _: state)
+    {
+        // This code gets timed
+        c = a / b;
+        benchmark::DoNotOptimize(c);
+    }
+    assert(rqm::to_string(c) == "16");
+}
+
+BENCHMARK(RQM_div);
+
 static void RQM_div_num_with_digit(benchmark::State &state)
 {
     // Perform setup here
