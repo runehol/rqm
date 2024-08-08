@@ -70,6 +70,30 @@ namespace rqm
         return c;
     }
 
+    // add a and b, assuming both are positive. this function ignores the signs in the view
+    [[nodiscard]] static numview abs_add_digit(numview c, const numview a, digit_t b)
+    {
+        c.n_digits = 0;
+
+        const digit_t *a_ptr = a.digits;
+        const digit_t *a_end = a.digits + a.n_digits;
+
+        double_digit_t carry = b;
+        while(a_ptr < a_end)
+        {
+            double_digit_t v = double_digit_t(*a_ptr++) + carry;
+            c.digits[c.n_digits++] = v;
+            carry = v >> n_digit_bits;
+        }
+
+        if(carry != 0)
+        {
+            c.digits[c.n_digits++] = carry;
+            carry = 0;
+        }
+        return c;
+    }
+
     // subtract b from a, assuming a is larger than b. this function ignores the signs in the view
     [[nodiscard]] numview abs_subtract_a_larger_than_b(numview c, const numview a, const numview b)
     {
@@ -218,4 +242,94 @@ namespace rqm
         return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
     }
 
+    [[nodiscard]] numview shift_left(numview c, const numview a, uint32_t shift_amount)
+    {
+        if(a.signum == 0) return zero_out(c);
+        c.signum = a.signum;
+
+        uint32_t shift_whole_digits = shift_amount / n_digit_bits;
+        uint32_t shift_left_within_digits = shift_amount % n_digit_bits;
+
+        c.n_digits = 0;
+        for(uint32_t idx = 0; idx < shift_whole_digits; ++idx)
+        {
+            c.digits[c.n_digits++] = 0;
+        }
+
+        if(shift_left_within_digits == 0)
+        {
+            for(uint32_t idx = 0; idx < a.n_digits; ++idx)
+            {
+                c.digits[c.n_digits++] = a.digits[idx];
+            }
+        } else
+        {
+            uint32_t shift_right_within_digits = n_digit_bits - shift_left_within_digits;
+            digit_t extra = 0;
+            for(uint32_t idx = 0; idx < a.n_digits; ++idx)
+            {
+                digit_t ad = a.digits[idx];
+                c.digits[c.n_digits++] = extra | (ad << shift_left_within_digits);
+                extra = ad >> shift_right_within_digits;
+            }
+            if(extra != 0)
+            {
+                c.digits[c.n_digits++] = extra;
+            }
+        }
+        return c;
+    }
+
+    [[nodiscard]] numview shift_right(numview c, const numview a, uint32_t shift_amount)
+    {
+        if(a.signum == 0) return zero_out(c);
+
+        uint64_t shift_whole_digits = shift_amount / n_digit_bits;
+        uint32_t shift_right_within_digits = shift_amount % n_digit_bits;
+        uint32_t shift_left_within_digits = n_digit_bits - shift_right_within_digits;
+
+        digit_t extra = 0;
+        c.n_digits = std::max<int64_t>(0, a.n_digits - shift_whole_digits);
+        if(shift_right_within_digits == 0)
+        {
+            for(int64_t idx = a.n_digits - 1 - shift_whole_digits; idx >= 0; --idx)
+            {
+                digit_t ad = a.digits[idx + shift_whole_digits];
+                c.digits[idx] = ad;
+            }
+
+        } else
+        {
+            for(int64_t idx = a.n_digits - 1 - shift_whole_digits; idx >= 0; --idx)
+            {
+                digit_t ad = a.digits[idx + shift_whole_digits];
+
+                c.digits[idx] = extra | (ad >> shift_right_within_digits);
+                extra = ad << shift_left_within_digits;
+            }
+        }
+
+        // arithmetic shift right is a flooring division. therefore, if we have a negative a, we should add 1 to the magnitude (in sign-magnitude representation) if we shift out any 1 bits
+        if(a.signum == -1)
+        {
+            bool round_up = false;
+            for(uint32_t idx = 0; idx < shift_whole_digits && idx < a.n_digits; ++idx)
+            {
+                round_up = a.digits[idx] != 0;
+                if(round_up) break;
+            }
+            if(!round_up && shift_whole_digits < a.n_digits)
+            {
+                round_up = (a.digits[shift_whole_digits] & ((1 << shift_right_within_digits) - 1)) != 0;
+            }
+
+            if(round_up)
+            {
+                // a little naughty, our routines are generally not resistant against aliasing. but this one is safe
+                c = abs_add_digit(c, c, 1);
+            }
+        }
+
+        return with_sign_unless_zero(a.signum, remove_high_zeros(c));
+    }
 } // namespace rqm

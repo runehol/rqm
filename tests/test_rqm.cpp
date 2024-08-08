@@ -24,6 +24,30 @@ TEST(RQM, simple_add)
     EXPECT_EQ(c, cexp);
 }
 
+TEST(RQM, simple_shift_right)
+{
+    int64_t ia = -2;
+    int64_t ib = 1;
+    rqm::num a = ia;
+    rqm::num c = a >> ib;
+    int64_t ic = ia >> ib;
+    rqm::num cexp = ic;
+    EXPECT_EQ(c.to_int64_t(), ic);
+    EXPECT_EQ(c, cexp);
+}
+
+TEST(RQM, simple_shift_right2)
+{
+    int64_t ia = 4294967296;
+    int64_t ib = 0;
+    rqm::num a = ia;
+    rqm::num c = a >> ib;
+    int64_t ic = ia >> ib;
+    rqm::num cexp = ic;
+    EXPECT_EQ(c.to_int64_t(), ic);
+    EXPECT_EQ(c, cexp);
+}
+
 TEST(RQM, simple_to_string)
 {
     int64_t ia = -1113852700;
@@ -190,4 +214,32 @@ RC_GTEST_PROP(RQM, repeated_squaring, (uint8_t n_times))
     uint32_t expected_n_digits = 1 + n_bits / rqm::n_digit_bits;
 
     RC_ASSERT(v.get_n_digits() == expected_n_digits);
+}
+
+RC_GTEST_PROP(RQM, shift_left, (int32_t ia, uint8_t ib))
+{
+    RC_PRE(ib <= 32);
+    rqm::num a = ia;
+    rqm::num result = a << ib;
+    RC_ASSERT(result == (int64_t(ia) << ib));
+}
+
+RC_GTEST_PROP(RQM, shift_right, (int64_t ia, uint32_t ib))
+{
+    rqm::num a = ia;
+    rqm::num result = a >> ib;
+    int64_t expected_result = ia < 0 ? -1 : 0;
+    if(ib < 64)
+    {
+        expected_result = ia >> ib;
+    }
+    RC_ASSERT(result == expected_result);
+}
+
+RC_GTEST_PROP(RQM, shift_left_right_returns_same, (int64_t ia, uint16_t ib))
+{
+    rqm::num a = ia;
+    rqm::num a2 = a << ib;
+    rqm::num a3 = a2 >> ib;
+    RC_ASSERT(a == a3);
 }

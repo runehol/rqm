@@ -165,6 +165,20 @@ namespace rqm
         return b * a;
     }
 
+    num operator<<(const num &a, uint32_t b)
+    {
+        num c(num::empty_with_n_digits(), shift_left_digit_estimate(a.get_n_digits(), b));
+        c.update_signum_n_digits(shift_left(c.to_numview(), a.to_numview(), b));
+        return c;
+    }
+
+    num operator>>(const num &a, uint32_t b)
+    {
+        num c(num::empty_with_n_digits(), shift_right_digit_estimate(a.get_n_digits(), b));
+        c.update_signum_n_digits(shift_right(c.to_numview(), a.to_numview(), b));
+        return c;
+    }
+
     std::ostream &operator<<(std::ostream &os, const num &a)
     {
         uint32_t buf_size = to_string_buffer_estimate(a.get_n_digits());

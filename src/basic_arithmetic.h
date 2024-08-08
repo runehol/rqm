@@ -112,6 +112,27 @@ namespace rqm
 
     [[nodiscard]] numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor);
 
+    template<typename T>
+    T cdiv(T a, T b)
+    {
+        return (a + b - 1) / b;
+    }
+
+    [[nodiscard]] static inline uint32_t shift_left_digit_estimate(uint32_t a_digits, uint32_t left_shift_amount)
+    {
+        return a_digits + cdiv<uint64_t>(left_shift_amount, n_digit_bits);
+    }
+
+    [[nodiscard]] static inline uint32_t shift_right_digit_estimate(uint32_t a_digits, uint32_t right_shift_amount)
+    {
+        // make sure we always have one digit present, just in case.
+        return std::max<int64_t>(1, a_digits - right_shift_amount / n_digit_bits);
+    }
+
+    [[nodiscard]] numview shift_left(numview c, const numview a, uint32_t shift_amount);
+
+    [[nodiscard]] numview shift_right(numview c, const numview a, uint32_t shift_amount);
+
 } // namespace rqm
 
 #endif // RQM_BASIC_ARITHMETIC_H

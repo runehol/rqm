@@ -156,6 +156,8 @@ namespace rqm
     num operator*(const num &a, int32_t b);
     num operator*(int32_t a, const num &b);
     num operator/(const num &a, int32_t b);
+    num operator<<(const num &a, uint32_t b);
+    num operator>>(const num &a, uint32_t b);
 
     std::ostream &operator<<(std::ostream &os, const num &a);
     std::string to_string(const num &a);
