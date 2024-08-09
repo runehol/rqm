@@ -186,6 +186,8 @@ namespace rqm
 
     uint32_t countr_zero(const num &v);
 
+    num gcd(const num &a, const num &b);
+
 } // namespace rqm
 
 #endif // RQM_NUM_H

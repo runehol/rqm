@@ -439,4 +439,41 @@ namespace rqm
         return result;
     }
 
+    [[nodiscard]] numview binary_gcd(numview c, numview a, numview b)
+    {
+        // make both sides non-negative
+        a.signum = std::abs(a.signum);
+        b.signum = std::abs(b.signum);
+
+        // handle the zero cases. gcd(a, 0) = 0, gcd(0, b) = 0, gcd(0, 0) = 0
+        if(a.signum == 0) return copy_view(c, b);
+        if(b.signum == 0) return copy_view(c, a);
+
+        MAKE_STACK_TEMPORARY_NUMVIEW(aa, a.n_digits);
+        MAKE_STACK_TEMPORARY_NUMVIEW(bb, b.n_digits);
+
+        uint32_t a_n_pow2s = countr_zero(a);
+        uint32_t b_n_pow2s = countr_zero(b);
+        uint32_t common_pow2s = std::min(a_n_pow2s, b_n_pow2s);
+        aa = shift_right(aa, a, a_n_pow2s);
+        bb = shift_right(bb, b, b_n_pow2s);
+
+        while(true)
+        {
+            int cmp = abs_compare(aa, bb);
+            if(cmp == 0) break; // found it
+            if(cmp < 0)
+            {
+                std::swap(aa, bb);
+            }
+            // now aa > bb
+
+            aa = abs_subtract_a_larger_than_b(aa, aa, bb);
+            uint32_t aa_n_pow2s = countr_zero(aa);
+            aa = shift_right(aa, aa, aa_n_pow2s);
+        }
+
+        return shift_left(c, aa, common_pow2s);
+    }
+
 } // namespace rqm

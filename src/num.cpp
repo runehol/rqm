@@ -215,4 +215,11 @@ namespace rqm
         return countr_zero(v.to_numview());
     }
 
+    num gcd(const num &a, const num &b)
+    {
+        num c(num::empty_with_n_digits(), gcd_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        c.update_signum_n_digits(binary_gcd(c.to_numview(), a.to_numview(), b.to_numview()));
+        return c;
+    }
+
 } // namespace rqm

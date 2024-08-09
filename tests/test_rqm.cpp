@@ -303,11 +303,25 @@ RC_GTEST_PROP(RQM, post_decrement, (int64_t ia))
     RC_ASSERT(b == rqm::num(ia) - 1);
 }
 
-RC_GTEST_PROP(RQM, countr_zero, (int64_t ia))
+template<typename T>
+T euclidean_gcd(T a, T b)
 {
-    RC_PRE(ia > 0);
+    a = std::abs(a);
+    b = std::abs(b);
+    while(b != 0)
+    {
+        T t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+RC_GTEST_PROP(RQM, gcd, (int64_t ia, int64_t ib))
+{
     rqm::num a = ia;
-    uint32_t trz = countr_zero(a);
-    uint32_t exp = __builtin_ctzll(ia);
-    RC_ASSERT(trz == exp);
+    rqm::num b = ib;
+    rqm::num c = rqm::gcd(ia, ib);
+    uint32_t exp = euclidean_gcd(ia, ib);
+    RC_ASSERT(c == exp);
 }

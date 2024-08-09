@@ -137,6 +137,13 @@ namespace rqm
 
     uint32_t countr_zero(const numview v);
 
+    [[nodiscard]] constexpr static inline uint32_t gcd_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+    {
+        return std::min(a_digits, b_digits);
+    }
+
+    [[nodiscard]] numview binary_gcd(numview c, numview a, numview b);
+
 } // namespace rqm
 
 #endif // RQM_BASIC_ARITHMETIC_H
