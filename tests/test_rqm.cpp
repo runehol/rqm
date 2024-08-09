@@ -302,3 +302,12 @@ RC_GTEST_PROP(RQM, post_decrement, (int64_t ia))
     RC_ASSERT(a == ia);
     RC_ASSERT(b == rqm::num(ia) - 1);
 }
+
+RC_GTEST_PROP(RQM, countr_zero, (int64_t ia))
+{
+    RC_PRE(ia > 0);
+    rqm::num a = ia;
+    uint32_t trz = countr_zero(a);
+    uint32_t exp = __builtin_ctzll(ia);
+    RC_ASSERT(trz == exp);
+}

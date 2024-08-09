@@ -19,7 +19,7 @@ namespace rqm
     }
 
     template<typename T>
-    [[nodiscard]] signum_t compare_signum(T a, T b)
+    [[nodiscard]] constexpr signum_t compare_signum(T a, T b)
     {
         if(a < b) return -1;
         if(a > b) return 1;
@@ -27,46 +27,46 @@ namespace rqm
     }
 
     template<typename T>
-    [[nodiscard]] signum_t internal_compare_unequal(T a, T b)
+    [[nodiscard]] constexpr signum_t internal_compare_unequal(T a, T b)
     {
         return a > b ? 1 : -1;
     }
 
     [[nodiscard]] signum_t compare(const numview a, const numview b);
 
-    [[nodiscard]] static inline numview negate(numview a)
+    [[nodiscard]] constexpr static inline numview negate(numview a)
     {
         a.signum = -a.signum;
         return a;
     }
 
-    [[nodiscard]] static inline numview abs(numview a)
+    [[nodiscard]] constexpr static inline numview abs(numview a)
     {
         a.signum = std::abs(a.signum);
         return a;
     }
 
-    [[nodiscard]] static inline numview with_signum(signum_t signum, numview a)
+    [[nodiscard]] constexpr static inline numview with_signum(signum_t signum, numview a)
     {
         a.signum = signum;
         return a;
     }
 
-    [[nodiscard]] static inline numview with_sign_unless_zero(signum_t signum, numview a)
+    [[nodiscard]] constexpr static inline numview with_sign_unless_zero(signum_t signum, numview a)
     {
         a.signum = signum;
         if(a.n_digits == 0) a.signum = 0;
         return a;
     }
 
-    [[nodiscard]] static inline numview zero_out(numview a)
+    [[nodiscard]] constexpr static inline numview zero_out(numview a)
     {
         a.signum = 0;
         a.n_digits = 0;
         return a;
     }
 
-    [[nodiscard]] static inline numview remove_high_zeros(numview c)
+    [[nodiscard]] constexpr static inline numview remove_high_zeros(numview c)
     {
         // adjust down after cancellation
         while(c.n_digits > 0 && c.digits[c.n_digits - 1] == 0)
@@ -81,12 +81,12 @@ namespace rqm
 
     [[nodiscard]] numview add(numview c, numview a, numview b);
 
-    [[nodiscard]] static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+    [[nodiscard]] constexpr static inline uint32_t add_digit_estimate(uint32_t a_digits, uint32_t b_digits)
     {
         return std::max(a_digits, b_digits) + 1;
     }
 
-    [[nodiscard]] static inline uint32_t multiply_digit_estimate(uint32_t a_digits, uint32_t b_digits)
+    [[nodiscard]] constexpr static inline uint32_t multiply_digit_estimate(uint32_t a_digits, uint32_t b_digits)
     {
         return a_digits + b_digits;
     }
@@ -103,7 +103,7 @@ namespace rqm
 
     [[nodiscard]] numview multiply_with_single_digit(numview c, const numview a, digit_t b);
 
-    [[nodiscard]] static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits, uint32_t divisor_digits)
+    [[nodiscard]] constexpr static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits, uint32_t divisor_digits)
     {
         return dividend_digits - divisor_digits + 1;
     }
@@ -115,17 +115,17 @@ namespace rqm
     [[nodiscard]] numview divmod(numview quotient, numview *remainder, const numview dividend, const numview divisor);
 
     template<typename T>
-    T cdiv(T a, T b)
+    constexpr T cdiv(T a, T b)
     {
         return (a + b - 1) / b;
     }
 
-    [[nodiscard]] static inline uint32_t shift_left_digit_estimate(uint32_t a_digits, uint32_t left_shift_amount)
+    [[nodiscard]] constexpr static inline uint32_t shift_left_digit_estimate(uint32_t a_digits, uint32_t left_shift_amount)
     {
         return a_digits + cdiv<uint64_t>(left_shift_amount, n_bits_in_digit);
     }
 
-    [[nodiscard]] static inline uint32_t shift_right_digit_estimate(uint32_t a_digits, uint32_t right_shift_amount)
+    [[nodiscard]] constexpr static inline uint32_t shift_right_digit_estimate(uint32_t a_digits, uint32_t right_shift_amount)
     {
         // make sure we always have one digit present, just in case.
         return std::max<int64_t>(1, a_digits - right_shift_amount / n_bits_in_digit);
@@ -134,6 +134,8 @@ namespace rqm
     [[nodiscard]] numview shift_left(numview c, const numview a, uint32_t shift_amount);
 
     [[nodiscard]] numview shift_right(numview c, const numview a, uint32_t shift_amount);
+
+    uint32_t countr_zero(const numview v);
 
 } // namespace rqm
 

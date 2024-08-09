@@ -7,9 +7,14 @@
 namespace rqm
 {
 
-    static digit_t countl_zero(digit_t x)
+    static constexpr digit_t countl_zero(digit_t x)
     {
         return __builtin_clz(x);
+    }
+
+    static constexpr digit_t countr_zero(digit_t x)
+    {
+        return __builtin_ctz(x);
     }
 
     // compare a and b, assuming both are positive. this function ignores the signs in the view
@@ -417,4 +422,21 @@ namespace rqm
 
         return with_sign_unless_zero(a.signum, remove_high_zeros(c));
     }
+
+    uint32_t countr_zero(const numview v)
+    {
+        assert(v.signum == 1);
+        uint32_t result = 0;
+        for(uint32_t i = 0; i < v.n_digits; ++i, result += n_bits_in_digit)
+        {
+            digit_t vd = v.digits[i];
+            if(vd != 0)
+            {
+                result += countr_zero(vd);
+                break;
+            }
+        }
+        return result;
+    }
+
 } // namespace rqm

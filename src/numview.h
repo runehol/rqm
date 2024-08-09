@@ -17,7 +17,7 @@ namespace rqm
         /**
            Construct a number with value and borrowed storage
          */
-        numview(uint32_t _n_digits, signum_t _signum, const digit_t *_digits)
+        constexpr numview(uint32_t _n_digits, signum_t _signum, const digit_t *_digits)
             : n_digits(_n_digits),
               signum(_signum),
               digits(const_cast<digit_t *>(_digits))
@@ -26,7 +26,7 @@ namespace rqm
         /**
            Construct an empty number with borrowed storage provided, used for results
          */
-        numview(digit_t *_digits)
+        constexpr numview(digit_t *_digits)
             : n_digits(0),
               signum(0),
               digits(_digits)

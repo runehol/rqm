@@ -184,6 +184,8 @@ namespace rqm
     std::string to_string(const num &a);
     num from_string(const std::string_view sv);
 
+    uint32_t countr_zero(const num &v);
+
 } // namespace rqm
 
 #endif // RQM_NUM_H

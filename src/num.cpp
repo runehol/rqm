@@ -210,4 +210,9 @@ namespace rqm
         return c;
     }
 
+    uint32_t countr_zero(const num &v)
+    {
+        return countr_zero(v.to_numview());
+    }
+
 } // namespace rqm
