@@ -74,8 +74,6 @@ namespace rqm
     rnum operator*(int32_t a, const rnum &b);
     rnum operator/(const rnum &a, int32_t b);
     rnum operator/(const rnum &a, const rnum &b);
-    rnum operator<<(const rnum &a, uint32_t b);
-    rnum operator>>(const rnum &a, uint32_t b);
 
     // simple inline implementations of the pre/post increment/decrement operators. could be optimised further if necessary
     static inline rnum &operator++(rnum &a)
