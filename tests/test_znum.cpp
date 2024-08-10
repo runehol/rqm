@@ -80,14 +80,22 @@ RC_GTEST_PROP(RQM_ZNUM, comparison, (int64_t ia, int64_t ib))
 
 RC_GTEST_PROP(RQM_ZNUM, negate, (int64_t ia))
 {
+    RC_PRE(ia != std::numeric_limits<int64_t>::min());
     rqm::znum a = ia;
     RC_ASSERT(-a == -ia);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, abs, (int64_t ia))
 {
+    RC_PRE(ia != std::numeric_limits<int64_t>::min());
     rqm::znum a = ia;
     RC_ASSERT(rqm::abs(a) == std::abs(ia));
+}
+
+RC_GTEST_PROP(RQM_ZNUM, operator_not, (int64_t ia))
+{
+    rqm::znum a = ia;
+    RC_ASSERT(!a == !ia);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, add, (int64_t ia, int64_t ib))

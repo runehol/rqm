@@ -111,6 +111,8 @@ namespace rqm
 
         void update_signum_n_digits(numview o);
 
+        signum_t get_signum() const { return signum; }
+
     private:
         uint32_t *setup_storage(size_t _n_digits)
         {
@@ -178,6 +180,11 @@ namespace rqm
     static inline znum operator--(znum &a, int)
     {
         return a - 1;
+    }
+
+    static inline bool operator!(const znum &a)
+    {
+        return a.get_signum() == 0;
     }
 
     std::ostream &operator<<(std::ostream &os, const znum &a);
