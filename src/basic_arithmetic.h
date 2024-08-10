@@ -34,6 +34,8 @@ namespace rqm
 
     [[nodiscard]] signum_t compare(const numview a, const numview b);
 
+    uint32_t n_bits(const numview a);
+
     [[nodiscard]] constexpr static inline numview negate(numview a)
     {
         a.signum = -a.signum;

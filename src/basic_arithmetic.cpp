@@ -41,6 +41,18 @@ namespace rqm
         return a.signum * abs_compare(a, b);
     }
 
+    uint32_t n_bits(const numview a)
+    {
+        uint32_t result = a.n_digits * n_bits_in_digit;
+        if(a.n_digits > 0)
+        {
+            digit_t msb = a.digits[a.n_digits - 1];
+            assert(msb != 0); // if not we have an un-normalised representation
+            result -= countl_zero(msb);
+        }
+        return result;
+    }
+
     // add a and b, assuming both are positive. this function ignores the signs in the view
     [[nodiscard]] static numview abs_add(numview c, const numview a, const numview b)
     {

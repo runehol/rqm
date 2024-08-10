@@ -126,6 +126,8 @@ namespace rqm
 
         uint32_t n_digits() const { return _n_digits; }
 
+        uint32_t n_bits() const;
+
         void update_signum_n_digits(numview o);
 
         signum_t signum() const { return _signum; }

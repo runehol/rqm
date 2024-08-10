@@ -51,6 +51,8 @@ namespace rqm
         const znum &nom() const { return nominator; }
         const znum &denom() const { return denominator; }
 
+        uint32_t n_bits() const { return nominator.n_bits() + denominator.n_bits(); }
+
     private:
         void canonicalize();
 

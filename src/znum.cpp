@@ -58,6 +58,11 @@ namespace rqm
         assert(digits() == o.digits);
     }
 
+    uint32_t znum::n_bits() const
+    {
+        return rqm::n_bits(to_numview());
+    }
+
     numview znum::to_numview() const
     {
         return numview(_n_digits, _signum, digits());

@@ -252,6 +252,16 @@ TEST(RQM_ZNUM, from_string_edge_cases)
     EXPECT_THROW(rqm::znum::from_string("4123*"), std::invalid_argument);
 }
 
+TEST(RQM_ZNUM, n_bits)
+{
+    EXPECT_EQ(rqm::znum(0).n_bits(), 0);
+    EXPECT_EQ(rqm::znum(1).n_bits(), 1);
+    EXPECT_EQ(rqm::znum(-1).n_bits(), 1);
+    EXPECT_EQ(rqm::znum((1 << 31) - 1).n_bits(), 31);
+    EXPECT_EQ(rqm::znum((1 << 31)).n_bits(), 32);
+    EXPECT_EQ(rqm::znum(15).n_bits(), 4);
+}
+
 RC_GTEST_PROP(RQM_ZNUM, repeated_doubling, (uint8_t n_times))
 {
     rqm::znum v = 2;
@@ -264,6 +274,7 @@ RC_GTEST_PROP(RQM_ZNUM, repeated_doubling, (uint8_t n_times))
     uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
     RC_ASSERT(v.n_digits() == expected_n_digits);
+    RC_ASSERT(v.n_bits() == n_bits + 1);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, repeated_squaring, (uint8_t n_times))
@@ -279,6 +290,7 @@ RC_GTEST_PROP(RQM_ZNUM, repeated_squaring, (uint8_t n_times))
     uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
     RC_ASSERT(v.n_digits() == expected_n_digits);
+    RC_ASSERT(v.n_bits() == n_bits + 1);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, shift_left, (int32_t ia, uint8_t ib))
