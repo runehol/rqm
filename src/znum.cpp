@@ -151,7 +151,7 @@ namespace rqm
         }
         znum c(znum::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits(), 1));
 
-        numview res = divide_by_single_digit(c.to_numview(), a.to_numview(), bu);
+        numview res = divmod_by_single_digit(c.to_numview(), nullptr, a.to_numview(), bu);
         if(negative)
         {
             res = negate(res);
@@ -167,8 +167,10 @@ namespace rqm
         {
             bu = -b;
         }
-
-        return modulo_by_single_digit(a.to_numview(), bu);
+        MAKE_STACK_TEMPORARY_NUMVIEW(quotient, quotient_digit_estimate(a.get_n_digits(), 1));
+        int64_t modulo = 0;
+        quotient = divmod_by_single_digit(quotient, &modulo, a.to_numview(), bu);
+        return modulo;
     }
 
     znum operator/(const znum &a, const znum &b)

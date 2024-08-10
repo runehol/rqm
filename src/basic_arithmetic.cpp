@@ -246,23 +246,18 @@ namespace rqm
         return remove_high_zeros(quotient);
     }
 
-    [[nodiscard]] numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor)
+    [[nodiscard]] numview divmod_by_single_digit(numview quotient, int64_t *modulo, const numview dividend, const digit_t divisor)
     {
         if(divisor == 0) throw std::out_of_range("divide by zero");
         if(dividend.signum == 0) return zero_out(quotient);
-        return with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, nullptr, dividend, divisor));
-    }
+        digit_t non_neg_modulo = 0;
+        quotient = with_sign_unless_zero(dividend.signum, abs_divmod_by_single_digit(quotient, &non_neg_modulo, dividend, divisor));
 
-    [[nodiscard]] int64_t modulo_by_single_digit(const numview dividend, const digit_t divisor)
-    {
-        if(divisor == 0) throw std::out_of_range("divide by zero");
-        if(dividend.signum == 0) return 0;
-        MAKE_STACK_TEMPORARY_NUMVIEW(quotient, quotient_digit_estimate(dividend.n_digits, 1));
-        digit_t non_neg_remainder = 0;
-        quotient = abs_divmod_by_single_digit(quotient, &non_neg_remainder, dividend, divisor);
-        int64_t remainder = int64_t(non_neg_remainder) * dividend.signum;
-
-        return remainder;
+        if(modulo != nullptr)
+        {
+            *modulo = int64_t(non_neg_modulo) * dividend.signum;
+        }
+        return quotient;
     }
 
     [[nodiscard]] static numview divmod_normalised(numview quotient, numview *remainder, numview dividend, const numview divisor)
