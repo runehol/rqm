@@ -130,6 +130,8 @@ namespace rqm
 
         signum_t get_signum() const { return signum; }
 
+        static znum from_string(const std::string_view sv);
+
     private:
         uint32_t *setup_storage(size_t _n_digits)
         {
@@ -208,7 +210,6 @@ namespace rqm
 
     std::ostream &operator<<(std::ostream &os, const znum &a);
     std::string to_string(const znum &a);
-    znum from_string(const std::string_view sv);
 
     uint32_t countr_zero(const znum &v);
 

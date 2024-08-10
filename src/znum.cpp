@@ -226,7 +226,7 @@ namespace rqm
         return std::string(sv);
     }
 
-    znum from_string(const std::string_view sv)
+    znum znum::from_string(const std::string_view sv)
     {
         znum c(znum::empty_with_n_digits(), from_chars_digit_estimate(sv.size()));
 

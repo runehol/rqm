@@ -61,7 +61,7 @@ TEST(RQM_ZNUM, simple_from_string)
 {
     std::string v = "-1113852700";
     int64_t exp = std::stod(v);
-    rqm::znum a = rqm::from_string(v);
+    rqm::znum a = rqm::znum::from_string(v);
 
     EXPECT_EQ(a, exp);
 }
@@ -240,7 +240,7 @@ RC_GTEST_PROP(RQM_ZNUM, to_string, (int64_t ia))
 RC_GTEST_PROP(RQM_ZNUM, from_string, (int64_t ia))
 {
     std::string ias = std::to_string(ia);
-    rqm::znum a = rqm::from_string(ias);
+    rqm::znum a = rqm::znum::from_string(ias);
     RC_ASSERT(a == ia);
 }
 
