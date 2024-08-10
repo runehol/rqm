@@ -132,10 +132,19 @@ namespace rqm
         return ss.str();
     }
 
-    /*
     rnum rnum::from_string(const std::string_view sv)
     {
+        auto slash_pos = sv.find('/');
+        if(slash_pos != sv.npos)
+        {
+            std::string_view str_nom = sv.substr(0, slash_pos);
+            std::string_view str_denom = sv.substr(slash_pos + 1, sv.npos);
+            return rnum(znum::from_string(str_nom), znum::from_string(str_denom));
+
+        } else
+        {
+            return rnum(znum::from_string(sv));
+        }
     }
-    */
 
 } // namespace rqm

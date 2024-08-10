@@ -33,14 +33,19 @@ TEST(RQM_RNUM, divide_by_zero)
     EXPECT_THROW(rqm::rnum(4, 0), std::out_of_range);
 }
 
-/*
 TEST(RQM_RNUM, FromString)
 {
-    rqm::rnum r = rqm::rnum::from_string("3/4");
-    EXPECT_EQ(r.nom(), rqm::znum(3));
+    rqm::rnum r = rqm::rnum::from_string("-3/4");
+    EXPECT_EQ(r.nom(), rqm::znum(-3));
     EXPECT_EQ(r.denom(), rqm::znum(4));
 }
-*/
+
+TEST(RQM_RNUM, FromString2)
+{
+    rqm::rnum r = rqm::rnum::from_string("-3");
+    EXPECT_EQ(r.nom(), rqm::znum(-3));
+    EXPECT_EQ(r.denom(), rqm::znum(1));
+}
 
 TEST(RQM_RNUM, Abs)
 {
