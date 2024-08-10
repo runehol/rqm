@@ -263,7 +263,7 @@ RC_GTEST_PROP(RQM_ZNUM, repeated_doubling, (uint8_t n_times))
     }
     uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
-    RC_ASSERT(v.get_n_digits() == expected_n_digits);
+    RC_ASSERT(v.n_digits() == expected_n_digits);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, repeated_squaring, (uint8_t n_times))
@@ -278,7 +278,7 @@ RC_GTEST_PROP(RQM_ZNUM, repeated_squaring, (uint8_t n_times))
     }
     uint32_t expected_n_digits = 1 + n_bits / rqm::n_bits_in_digit;
 
-    RC_ASSERT(v.get_n_digits() == expected_n_digits);
+    RC_ASSERT(v.n_digits() == expected_n_digits);
 }
 
 RC_GTEST_PROP(RQM_ZNUM, shift_left, (int32_t ia, uint8_t ib))

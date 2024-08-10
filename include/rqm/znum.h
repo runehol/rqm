@@ -27,9 +27,9 @@ namespace rqm
 
         // this class allocates, so we need the rule of five
         znum()
-            : n_digits(0),
+            : _n_digits(0),
               is_stored_inline(true),
-              signum(0)
+              _signum(0)
         {}
 
         ~znum()
@@ -46,7 +46,7 @@ namespace rqm
         {
             znum v = znum(empty_with_n_digits(), 1);
             v.u.digits_inline[0] = 1;
-            v.signum = 1;
+            v._signum = 1;
             return v;
         }
 
@@ -54,35 +54,35 @@ namespace rqm
         {
             znum v = znum(empty_with_n_digits(), 1);
             v.u.digits_inline[0] = 1;
-            v.signum = 1;
+            v._signum = 1;
             return v;
         }
 
-        znum(empty_with_n_digits, uint32_t _n_digits)
+        znum(empty_with_n_digits, uint32_t __n_digits)
         {
-            setup_storage(_n_digits);
-            signum = 0;
+            setup_storage(__n_digits);
+            _signum = 0;
         }
 
         znum(const znum &o) // copy constructor
         {
-            signum = o.signum;
-            digit_t *ptr = setup_storage(o.n_digits);
-            std::memcpy(ptr, o.digits(), n_digits * sizeof(digit_t));
+            _signum = o._signum;
+            digit_t *ptr = setup_storage(o._n_digits);
+            std::memcpy(ptr, o.digits(), _n_digits * sizeof(digit_t));
         }
 
         znum(znum &&o) noexcept // move constructor
         {
-            signum = o.signum;
+            _signum = o._signum;
             is_stored_inline = o.stored_inline();
             if(is_stored_inline)
             {
-                digit_t *ptr = setup_storage(o.n_digits);
-                std::memcpy(ptr, o.u.digits_inline, n_digits * sizeof(digit_t));
+                digit_t *ptr = setup_storage(o._n_digits);
+                std::memcpy(ptr, o.u.digits_inline, _n_digits * sizeof(digit_t));
             } else
             {
 
-                n_digits = o.n_digits;
+                _n_digits = o._n_digits;
                 u.digits_ptr = std::exchange(o.u.digits_ptr, nullptr);
             }
         }
@@ -96,7 +96,7 @@ namespace rqm
         {
             if(&o != this)
             {
-                signum = o.signum;
+                _signum = o._signum;
                 if(!stored_inline())
                 {
                     delete[] u.digits_ptr; // deallocate
@@ -106,11 +106,11 @@ namespace rqm
                 is_stored_inline = o.stored_inline();
                 if(is_stored_inline)
                 {
-                    n_digits = o.n_digits;
-                    std::memcpy(u.digits_inline, o.u.digits_inline, n_digits * sizeof(digit_t));
+                    _n_digits = o._n_digits;
+                    std::memcpy(u.digits_inline, o.u.digits_inline, _n_digits * sizeof(digit_t));
                 } else
                 {
-                    std::swap(n_digits, o.n_digits);
+                    std::swap(_n_digits, o._n_digits);
                     std::swap(u.digits_ptr, o.u.digits_ptr);
                 }
             }
@@ -124,27 +124,27 @@ namespace rqm
         znum(int64_t value);
         int64_t to_int64_t() const;
 
-        uint32_t get_n_digits() const { return n_digits; }
+        uint32_t n_digits() const { return _n_digits; }
 
         void update_signum_n_digits(numview o);
 
-        signum_t get_signum() const { return signum; }
+        signum_t signum() const { return _signum; }
 
         static znum from_string(const std::string_view sv);
 
-        bool is_one() const { return signum == 1 && n_digits == 1 && digits()[0] == 1; }
+        bool is_one() const { return _signum == 1 && _n_digits == 1 && digits()[0] == 1; }
 
     private:
-        uint32_t *setup_storage(size_t _n_digits)
+        uint32_t *setup_storage(size_t __n_digits)
         {
-            n_digits = _n_digits;
-            is_stored_inline = _n_digits <= n_inline_digits;
+            _n_digits = __n_digits;
+            is_stored_inline = __n_digits <= n_inline_digits;
             if(is_stored_inline)
             {
                 return u.digits_inline;
             } else
             {
-                return (u.digits_ptr = new digit_t[_n_digits]);
+                return (u.digits_ptr = new digit_t[__n_digits]);
             }
         }
 
@@ -153,9 +153,9 @@ namespace rqm
         bool stored_inline() const { return is_stored_inline; }
         const digit_t *digits() const { return stored_inline() ? u.digits_inline : u.digits_ptr; }
 
-        uint32_t n_digits;
+        uint32_t _n_digits;
         bool is_stored_inline;
-        int16_t signum;
+        int16_t _signum;
         union
         {
             digit_t *digits_ptr;
@@ -211,7 +211,7 @@ namespace rqm
 
     static inline bool operator!(const znum &a)
     {
-        return a.get_signum() == 0;
+        return a.signum() == 0;
     }
 
     std::ostream &operator<<(std::ostream &os, const znum &a);

@@ -31,8 +31,8 @@ namespace rqm
     // method that places the number in canonical form (gcd(nom, denom) = 1)
     void rnum::canonicalize()
     {
-        if(denominator.get_signum() == 0) throw std::out_of_range("divide by zero");
-        if(denominator.get_signum() == -1)
+        if(denominator.signum() == 0) throw std::out_of_range("divide by zero");
+        if(denominator.signum() == -1)
         {
             nominator = -nominator;
             denominator = -denominator;

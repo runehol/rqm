@@ -46,7 +46,7 @@ namespace rqm
         static rnum one() { return rnum(znum::one()); }
         static rnum minus_one() { return rnum(znum::minus_one()); }
 
-        signum_t get_signum() const { return nominator.get_signum(); }
+        signum_t signum() const { return nominator.signum(); }
 
         const znum &nom() const { return nominator; }
         const znum &denom() const { return denominator; }
@@ -102,7 +102,7 @@ namespace rqm
 
     static inline bool operator!(const rnum &a)
     {
-        return a.get_signum() == 0;
+        return a.signum() == 0;
     }
 
     std::ostream &operator<<(std::ostream &os, const rnum &a);
