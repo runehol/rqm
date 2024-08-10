@@ -55,15 +55,15 @@ static void int64_t_div(benchmark::State &state)
 
 BENCHMARK(int64_t_div);
 
-static void RQM_add_same_sign(benchmark::State &state)
+static void RQM_ZNUM_add_same_sign(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num b = 0x123456789;
+    rqm::znum a = 0x123456789;
+    rqm::znum b = 0x123456789;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
-    rqm::num c;
+    rqm::znum c;
     for(auto _: state)
     {
         // This code gets timed
@@ -73,14 +73,14 @@ static void RQM_add_same_sign(benchmark::State &state)
     assert(rqm::to_string(c) == "9773436690");
 }
 
-BENCHMARK(RQM_add_same_sign);
+BENCHMARK(RQM_ZNUM_add_same_sign);
 
-static void RQM_add_diff_sign_a_larger(benchmark::State &state)
+static void RQM_ZNUM_add_diff_sign_a_larger(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num b = -0x12345678;
-    rqm::num c;
+    rqm::znum a = 0x123456789;
+    rqm::znum b = -0x12345678;
+    rqm::znum c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
@@ -93,14 +93,14 @@ static void RQM_add_diff_sign_a_larger(benchmark::State &state)
     assert(rqm::to_string(c) == "4581298449");
 }
 
-BENCHMARK(RQM_add_diff_sign_a_larger);
+BENCHMARK(RQM_ZNUM_add_diff_sign_a_larger);
 
-static void RQM_add_diff_sign_b_larger(benchmark::State &state)
+static void RQM_ZNUM_add_diff_sign_b_larger(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = -0x12345678;
-    rqm::num b = 0x123456789;
-    rqm::num c;
+    rqm::znum a = -0x12345678;
+    rqm::znum b = 0x123456789;
+    rqm::znum c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
@@ -113,14 +113,14 @@ static void RQM_add_diff_sign_b_larger(benchmark::State &state)
     assert(rqm::to_string(c) == "4581298449");
 }
 
-BENCHMARK(RQM_add_diff_sign_b_larger);
+BENCHMARK(RQM_ZNUM_add_diff_sign_b_larger);
 
-static void RQM_mul(benchmark::State &state)
+static void RQM_ZNUM_mul(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num b = 0x12345678;
-    rqm::num c;
+    rqm::znum a = 0x123456789;
+    rqm::znum b = 0x12345678;
+    rqm::znum c;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
@@ -133,13 +133,13 @@ static void RQM_mul(benchmark::State &state)
     assert(rqm::to_string(c) == "1492501008711192120");
 }
 
-BENCHMARK(RQM_mul);
+BENCHMARK(RQM_ZNUM_mul);
 
-static void RQM_mul_num_with_digit(benchmark::State &state)
+static void RQM_ZNUM_mul_num_with_digit(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num c;
+    rqm::znum a = 0x123456789;
+    rqm::znum c;
     int32_t b = 0x12345678;
 
     benchmark::DoNotOptimize(a);
@@ -153,14 +153,14 @@ static void RQM_mul_num_with_digit(benchmark::State &state)
     assert(rqm::to_string(c) == "1492501008711192120");
 }
 
-BENCHMARK(RQM_mul_num_with_digit);
+BENCHMARK(RQM_ZNUM_mul_num_with_digit);
 
-static void RQM_div(benchmark::State &state)
+static void RQM_ZNUM_div(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num c;
-    rqm::num b = 0x12345678;
+    rqm::znum a = 0x123456789;
+    rqm::znum c;
+    rqm::znum b = 0x12345678;
 
     benchmark::DoNotOptimize(a);
     benchmark::DoNotOptimize(b);
@@ -173,13 +173,13 @@ static void RQM_div(benchmark::State &state)
     assert(rqm::to_string(c) == "16");
 }
 
-BENCHMARK(RQM_div);
+BENCHMARK(RQM_ZNUM_div);
 
-static void RQM_div_num_with_digit(benchmark::State &state)
+static void RQM_ZNUM_div_num_with_digit(benchmark::State &state)
 {
     // Perform setup here
-    rqm::num a = 0x123456789;
-    rqm::num c;
+    rqm::znum a = 0x123456789;
+    rqm::znum c;
     int32_t b = 0x12345678;
 
     benchmark::DoNotOptimize(a);
@@ -193,4 +193,4 @@ static void RQM_div_num_with_digit(benchmark::State &state)
     assert(rqm::to_string(c) == "16");
 }
 
-BENCHMARK(RQM_div_num_with_digit);
+BENCHMARK(RQM_ZNUM_div_num_with_digit);

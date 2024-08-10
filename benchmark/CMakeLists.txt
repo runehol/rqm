@@ -4,7 +4,7 @@ enable_sanitizers(benchmark_rqm)
 
 target_sources(benchmark_rqm PRIVATE
 		benchmark_main.cpp
-		benchmark_rqm.cpp
+		benchmark_znum.cpp
 	)
 
 target_link_libraries(benchmark_rqm PRIVATE benchmark::benchmark)

@@ -1,5 +1,5 @@
-#ifndef RQM_NUM_H
-#define RQM_NUM_H
+#ifndef RQM_ZNUM_H
+#define RQM_ZNUM_H
 
 #include <cstdint>
 #include <cstring>
@@ -19,20 +19,20 @@ namespace rqm
        The value is held as sign-magnitude with signum indicating whether the value is positive, negative or zero.
        If the unsigned value would fit into a pointer, it's held inline with the number, otherwise we allocate memory to hold the digits
     */
-    class num
+    class znum
     {
     public:
         class empty_with_n_digits
         {};
 
         // this class allocates, so we need the rule of five
-        num()
+        znum()
             : n_digits(0),
               is_stored_inline(true),
               signum(0)
         {}
 
-        ~num()
+        ~znum()
 
         {
             if(!stored_inline())
@@ -41,20 +41,20 @@ namespace rqm
             }
         }
 
-        num(empty_with_n_digits, uint32_t _n_digits)
+        znum(empty_with_n_digits, uint32_t _n_digits)
         {
             setup_storage(_n_digits);
             signum = 0;
         }
 
-        num(const num &o) // copy constructor
+        znum(const znum &o) // copy constructor
         {
             signum = o.signum;
             digit_t *ptr = setup_storage(o.n_digits);
             std::memcpy(ptr, o.digits(), n_digits * sizeof(digit_t));
         }
 
-        num(num &&o) noexcept // move constructor
+        znum(znum &&o) noexcept // move constructor
         {
             signum = o.signum;
             is_stored_inline = o.stored_inline();
@@ -70,12 +70,12 @@ namespace rqm
             }
         }
 
-        num &operator=(const num &o) // copy assignment
+        znum &operator=(const znum &o) // copy assignment
         {
-            return *this = num(o);
+            return *this = znum(o);
         }
 
-        num &operator=(num &&o) noexcept // move assignment
+        znum &operator=(znum &&o) noexcept // move assignment
         {
             if(&o != this)
             {
@@ -100,11 +100,11 @@ namespace rqm
             return *this;
         }
 
-        explicit num(numview o);
+        explicit znum(numview o);
 
         numview to_numview() const;
 
-        num(int64_t value);
+        znum(int64_t value);
         int64_t to_int64_t() const;
 
         uint32_t get_n_digits() const { return n_digits; }
@@ -140,54 +140,54 @@ namespace rqm
         } u;
     };
 
-    num abs(const num &a);
+    znum abs(const znum &a);
 
-    bool operator==(const num &a, const num &b);
-    bool operator!=(const num &a, const num &b);
-    bool operator<(const num &a, const num &b);
-    bool operator<=(const num &a, const num &b);
-    bool operator>(const num &a, const num &b);
-    bool operator>=(const num &a, const num &b);
+    bool operator==(const znum &a, const znum &b);
+    bool operator!=(const znum &a, const znum &b);
+    bool operator<(const znum &a, const znum &b);
+    bool operator<=(const znum &a, const znum &b);
+    bool operator>(const znum &a, const znum &b);
+    bool operator>=(const znum &a, const znum &b);
 
-    num operator-(const num &a);
-    num operator+(const num &a, const num &b);
-    num operator-(const num &a, const num &b);
-    num operator*(const num &a, const num &b);
-    num operator*(const num &a, int32_t b);
-    num operator*(int32_t a, const num &b);
-    num operator/(const num &a, int32_t b);
-    num operator/(const num &a, const num &b);
-    num operator<<(const num &a, uint32_t b);
-    num operator>>(const num &a, uint32_t b);
+    znum operator-(const znum &a);
+    znum operator+(const znum &a, const znum &b);
+    znum operator-(const znum &a, const znum &b);
+    znum operator*(const znum &a, const znum &b);
+    znum operator*(const znum &a, int32_t b);
+    znum operator*(int32_t a, const znum &b);
+    znum operator/(const znum &a, int32_t b);
+    znum operator/(const znum &a, const znum &b);
+    znum operator<<(const znum &a, uint32_t b);
+    znum operator>>(const znum &a, uint32_t b);
 
     // simple inline implementations of the pre/post increment/decrement operators. could be optimised further if necessary
-    static inline num &operator++(num &a)
+    static inline znum &operator++(znum &a)
     {
         a = a + 1;
         return a;
     }
-    static inline num &operator--(num &a)
+    static inline znum &operator--(znum &a)
     {
         a = a - 1;
         return a;
     }
-    static inline num operator++(num &a, int)
+    static inline znum operator++(znum &a, int)
     {
         return a + 1;
     }
-    static inline num operator--(num &a, int)
+    static inline znum operator--(znum &a, int)
     {
         return a - 1;
     }
 
-    std::ostream &operator<<(std::ostream &os, const num &a);
-    std::string to_string(const num &a);
-    num from_string(const std::string_view sv);
+    std::ostream &operator<<(std::ostream &os, const znum &a);
+    std::string to_string(const znum &a);
+    znum from_string(const std::string_view sv);
 
-    uint32_t countr_zero(const num &v);
+    uint32_t countr_zero(const znum &v);
 
-    num gcd(const num &a, const num &b);
+    znum gcd(const znum &a, const znum &b);
 
 } // namespace rqm
 
-#endif // RQM_NUM_H
+#endif // RQM_ZNUM_H

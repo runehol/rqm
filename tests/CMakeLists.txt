@@ -7,7 +7,7 @@ add_executable(test_rqm)
 enable_sanitizers(test_rqm)
 
 target_sources(test_rqm PRIVATE
-		test_rqm.cpp
+		test_znum.cpp
 	)
 
 target_link_libraries(test_rqm PRIVATE gtest_main)
