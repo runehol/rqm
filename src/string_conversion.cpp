@@ -84,6 +84,10 @@ namespace rqm
         {
             sign = -1;
             ++pos;
+            if(pos == end)
+            {
+                throw std::invalid_argument("no characters to convert");
+            }
         }
 
         // now onto the main parsing

@@ -244,6 +244,14 @@ RC_GTEST_PROP(RQM_ZNUM, from_string, (int64_t ia))
     RC_ASSERT(a == ia);
 }
 
+TEST(RQM_ZNUM, from_string_edge_cases)
+{
+    EXPECT_THROW(rqm::znum::from_string(""), std::invalid_argument);
+    EXPECT_THROW(rqm::znum::from_string("-"), std::invalid_argument);
+    EXPECT_THROW(rqm::znum::from_string("%%#$%&/()"), std::invalid_argument);
+    EXPECT_THROW(rqm::znum::from_string("4123*"), std::invalid_argument);
+}
+
 RC_GTEST_PROP(RQM_ZNUM, repeated_doubling, (uint8_t n_times))
 {
     rqm::znum v = 2;
