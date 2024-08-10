@@ -199,6 +199,16 @@ RC_GTEST_PROP(RQM_ZNUM, divide, (int64_t ia, int64_t ib))
     RC_ASSERT(quotient == (ia / ib));
 }
 
+RC_GTEST_PROP(RQM_ZNUM, modulo, (int64_t ia, int64_t ib))
+{
+    RC_PRE(ib != 0);
+    RC_PRE(!(ib == -1 && ia == std::numeric_limits<int64_t>::min()));
+    rqm::znum a = ia;
+    rqm::znum b = ib;
+    rqm::znum quotient = a % b;
+    RC_ASSERT(quotient == (ia % ib));
+}
+
 RC_GTEST_PROP(RQM_ZNUM, divide_by_itself, (int64_t ia))
 {
     RC_PRE(ia != 0);

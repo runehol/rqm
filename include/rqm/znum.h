@@ -158,8 +158,9 @@ namespace rqm
     znum operator*(const znum &a, int32_t b);
     znum operator*(int32_t a, const znum &b);
     znum operator/(const znum &a, int32_t b);
-    int32_t operator%(const znum &a, int32_t b);
     znum operator/(const znum &a, const znum &b);
+    int32_t operator%(const znum &a, int32_t b);
+    znum operator%(const znum &a, const znum &b);
     znum operator<<(const znum &a, uint32_t b);
     znum operator>>(const znum &a, uint32_t b);
 

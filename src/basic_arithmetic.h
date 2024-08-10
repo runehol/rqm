@@ -105,7 +105,12 @@ namespace rqm
 
     [[nodiscard]] constexpr static inline uint32_t quotient_digit_estimate(uint32_t dividend_digits, uint32_t divisor_digits)
     {
-        return dividend_digits - divisor_digits + 1;
+        return std::max<int64_t>(0, int64_t(dividend_digits) - int64_t(divisor_digits) + 1);
+    }
+
+    [[nodiscard]] constexpr static inline uint32_t modulo_digit_estimate(uint32_t dividend_digits, uint32_t divisor_digits)
+    {
+        return divisor_digits;
     }
 
     [[nodiscard]] numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32);

@@ -180,6 +180,17 @@ namespace rqm
         return c;
     }
 
+    znum operator%(const znum &a, const znum &b)
+    {
+        MAKE_STACK_TEMPORARY_NUMVIEW(quotient, quotient_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+        znum c(znum::empty_with_n_digits(), modulo_digit_estimate(a.get_n_digits(), b.get_n_digits()));
+
+        numview modulo = c.to_numview();
+        quotient = divmod(quotient, &modulo, a.to_numview(), b.to_numview());
+        c.update_signum_n_digits(modulo);
+        return c;
+    }
+
     znum operator*(int32_t a, const znum &b)
     {
         return b * a;

@@ -318,7 +318,7 @@ namespace rqm
         if(divisor.signum == 0) throw std::out_of_range("divide by zero");
         if(dividend.signum == 0 || divisor.n_digits > dividend.n_digits)
         {
-            if(remainder != nullptr) *remainder = zero_out(*remainder);
+            if(remainder != nullptr) *remainder = copy_view(*remainder, dividend);
             return zero_out(quotient);
         }
         uint32_t normalization_shift = countl_zero(divisor.digits[divisor.n_digits - 1]);
@@ -336,6 +336,7 @@ namespace rqm
         quotient = divmod_normalised(quotient, &norm_remainder, norm_dividend, norm_divisor);
         if(remainder != nullptr)
         {
+            if(norm_remainder.n_digits == 0) norm_remainder.signum = 0;
             *remainder = shift_right(*remainder, norm_remainder, normalization_shift);
         }
         return quotient;
