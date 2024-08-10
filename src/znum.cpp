@@ -160,7 +160,7 @@ namespace rqm
         return c;
     }
 
-    int64_t operator%(const znum &a, int32_t b)
+    int32_t operator%(const znum &a, int32_t b)
     {
         uint32_t bu = b;
         if(b < 0)
