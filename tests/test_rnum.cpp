@@ -140,48 +140,44 @@ TEST(RQM_RNUM, DivisionRnum)
     EXPECT_EQ(result.denom(), rqm::znum(2));
 }
 
-TEST(RQM_RNUM, PreIncrement)
+RC_GTEST_PROP(RQM_RNUM, pre_increment, (int64_t in, uint32_t id))
 {
-    rqm::rnum r(1, 4);
-    ++r;
-    EXPECT_EQ(r.nom(), rqm::znum(5));
-    EXPECT_EQ(r.denom(), rqm::znum(4));
+    RC_PRE(id > uint32_t(0));
+    rqm::rnum a = rqm::rnum(in, id);
+    ++a;
+    RC_ASSERT(a == rqm::rnum(in, id) + 1);
 }
 
-TEST(RQM_RNUM, PreDecrement)
+RC_GTEST_PROP(RQM_RNUM, pre_decrement, (int64_t in, uint32_t id))
 {
-    rqm::rnum r(1, 4);
-    --r;
-    EXPECT_EQ(r.nom(), rqm::znum(-3));
-    EXPECT_EQ(r.denom(), rqm::znum(4));
+    RC_PRE(id > uint32_t(0));
+    rqm::rnum a = rqm::rnum(in, id);
+    --a;
+    RC_ASSERT(a == rqm::rnum(in, id) - 1);
 }
 
-TEST(RQM_RNUM, PostIncrement)
+RC_GTEST_PROP(RQM_RNUM, post_increment, (int64_t in, uint32_t id))
 {
-    rqm::rnum r(1, 4);
-    rqm::rnum result = r++;
-    EXPECT_EQ(result.nom(), rqm::znum(1));
-    EXPECT_EQ(result.denom(), rqm::znum(4));
-    EXPECT_EQ(r.nom(), rqm::znum(5));
-    EXPECT_EQ(r.denom(), rqm::znum(4));
+    RC_PRE(id > uint32_t(0));
+    rqm::rnum a = rqm::rnum(in, id);
+    rqm::rnum b = a++;
+    RC_ASSERT(a == rqm::rnum(in, id) + 1);
+    RC_ASSERT(b == rqm::rnum(in, id));
+}
+RC_GTEST_PROP(RQM_RNUM, post_decrement, (int64_t in, uint32_t id))
+{
+    RC_PRE(id > uint32_t(0));
+    rqm::rnum a = rqm::rnum(in, id);
+    rqm::rnum b = a--;
+    RC_ASSERT(a == rqm::rnum(in, id) - 1);
+    RC_ASSERT(b == rqm::rnum(in, id));
 }
 
-TEST(RQM_RNUM, PostDecrement)
+RC_GTEST_PROP(RQM_RNUM, operator_not, (int64_t in, uint32_t id))
 {
-    rqm::rnum r(1, 4);
-    rqm::rnum result = r--;
-    EXPECT_EQ(result.nom(), rqm::znum(1));
-    EXPECT_EQ(result.denom(), rqm::znum(4));
-    EXPECT_EQ(r.nom(), rqm::znum(-3));
-    EXPECT_EQ(r.denom(), rqm::znum(4));
-}
-
-TEST(RQM_RNUM, LogicalNot)
-{
-    rqm::rnum r(0);
-    EXPECT_TRUE(!r);
-    rqm::rnum r2(1, 4);
-    EXPECT_FALSE(!r2);
+    RC_PRE(id > uint32_t(0));
+    rqm::rnum r(in, id);
+    RC_ASSERT(!r == !in);
 }
 
 TEST(RQM_RNUM, ToString)
