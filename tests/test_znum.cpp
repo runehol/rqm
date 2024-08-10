@@ -172,6 +172,15 @@ RC_GTEST_PROP(RQM_ZNUM, divide_znum_with_digit, (int64_t ia, int32_t ib32))
     RC_ASSERT(quotient == (ia / ib));
 }
 
+RC_GTEST_PROP(RQM_ZNUM, modulo_znum_with_digit, (int64_t ia, int32_t ib32))
+{
+    RC_PRE(ib32 != 0);
+    int64_t ib = ib32;
+    rqm::znum a = ia;
+    rqm::znum quotient = a % ib;
+    RC_ASSERT(quotient == (ia % ib));
+}
+
 RC_GTEST_PROP(RQM_ZNUM, divide_with_digit_by_itself, (int32_t ia))
 {
     RC_PRE(ia != 0);

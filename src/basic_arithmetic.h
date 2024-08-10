@@ -111,6 +111,7 @@ namespace rqm
     [[nodiscard]] numview abs_divmod_by_single_digit(numview quotient, digit_t *remainder_ptr, const numview dividend, const digit_t divisor32);
 
     [[nodiscard]] numview divide_by_single_digit(numview quotient, const numview dividend, const digit_t divisor);
+    [[nodiscard]] int64_t modulo_by_single_digit(const numview dividend, const digit_t divisor);
 
     [[nodiscard]] numview divmod(numview quotient, numview *remainder, const numview dividend, const numview divisor);
 

@@ -160,6 +160,17 @@ namespace rqm
         return c;
     }
 
+    int64_t operator%(const znum &a, int32_t b)
+    {
+        uint32_t bu = b;
+        if(b < 0)
+        {
+            bu = -b;
+        }
+
+        return modulo_by_single_digit(a.to_numview(), bu);
+    }
+
     znum operator/(const znum &a, const znum &b)
     {
         znum c(znum::empty_with_n_digits(), quotient_digit_estimate(a.get_n_digits(), 1));
