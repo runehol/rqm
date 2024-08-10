@@ -319,15 +319,15 @@ RC_GTEST_PROP(RQM_ZNUM, post_increment, (int64_t ia))
 {
     rqm::znum a = ia;
     rqm::znum b = a++;
-    RC_ASSERT(a == ia);
-    RC_ASSERT(b == rqm::znum(ia) + 1);
+    RC_ASSERT(a == rqm::znum(ia) + 1);
+    RC_ASSERT(b == ia);
 }
 RC_GTEST_PROP(RQM_ZNUM, post_decrement, (int64_t ia))
 {
     rqm::znum a = ia;
     rqm::znum b = a--;
-    RC_ASSERT(a == ia);
-    RC_ASSERT(b == rqm::znum(ia) - 1);
+    RC_ASSERT(a == rqm::znum(ia) - 1);
+    RC_ASSERT(b == ia);
 }
 
 template<typename T>

@@ -90,11 +90,15 @@ namespace rqm
     }
     static inline rnum operator++(rnum &a, int)
     {
-        return a + 1;
+        rnum tmp = a;
+        ++a;
+        return tmp;
     }
     static inline rnum operator--(rnum &a, int)
     {
-        return a - 1;
+        rnum tmp = a;
+        --a;
+        return tmp;
     }
 
     static inline bool operator!(const rnum &a)

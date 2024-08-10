@@ -198,11 +198,15 @@ namespace rqm
     }
     static inline znum operator++(znum &a, int)
     {
-        return a + 1;
+        znum tmp = a;
+        ++a;
+        return tmp;
     }
     static inline znum operator--(znum &a, int)
     {
-        return a - 1;
+        znum tmp = a;
+        --a;
+        return tmp;
     }
 
     static inline bool operator!(const znum &a)
