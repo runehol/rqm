@@ -41,6 +41,23 @@ namespace rqm
             }
         }
 
+        static znum zero() { return znum(); }
+        static znum one()
+        {
+            znum v = znum(empty_with_n_digits(), 1);
+            v.u.digits_inline[0] = 1;
+            v.signum = 1;
+            return v;
+        }
+
+        static znum minus_one()
+        {
+            znum v = znum(empty_with_n_digits(), 1);
+            v.u.digits_inline[0] = 1;
+            v.signum = 1;
+            return v;
+        }
+
         znum(empty_with_n_digits, uint32_t _n_digits)
         {
             setup_storage(_n_digits);
