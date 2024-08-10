@@ -132,6 +132,8 @@ namespace rqm
 
         static znum from_string(const std::string_view sv);
 
+        bool is_one() const { return signum == 1 && n_digits == 1 && digits()[0] == 1; }
+
     private:
         uint32_t *setup_storage(size_t _n_digits)
         {
