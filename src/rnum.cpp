@@ -46,6 +46,29 @@ namespace rqm
         }
     }
 
+    rnum rnum::from_double(double value)
+    {
+        if(std::isnan(value)) throw std::out_of_range("cannot represent NaN as a rational number");
+        if(std::isinf(value)) throw std::out_of_range("cannot represent infinity as a rational number");
+
+        int exp = 0;
+        double fmantissa = frexp(value, &exp);
+        // get to integers
+        fmantissa *= (1ull << 53);
+        exp -= 53;
+        int64_t imantissa = std::llrint(fmantissa);
+        znum nominator = imantissa;
+        znum denominator = znum::one();
+        if(exp > 0)
+        {
+            nominator = nominator << exp;
+        } else if(exp < 0)
+        {
+            denominator = denominator << -exp;
+        }
+        return rnum(std::move(nominator), std::move(denominator));
+    }
+
     rnum abs(const rnum &a)
     {
         return rnum(abs(a.nom()), a.denom());

@@ -40,6 +40,7 @@ namespace rqm
         rnum(int64_t nom, int64_t denom);
 
         static rnum from_string(const std::string_view sv);
+        static rnum from_double(double value);
 
         static rnum zero() { return rnum(); }
         static rnum one() { return rnum(znum::one()); }

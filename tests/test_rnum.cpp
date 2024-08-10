@@ -28,6 +28,16 @@ TEST(RQM_RNUM, IntPairConstructor_with_simplification)
     EXPECT_EQ(r.denom(), rqm::znum(5));
 }
 
+TEST(RQM_RNUM, from_double)
+{
+    EXPECT_EQ(rqm::rnum::from_double(0.75), rqm::rnum(3, 4));
+    EXPECT_EQ(rqm::rnum::from_double(1337), rqm::rnum(1337, 1));
+    EXPECT_EQ(rqm::rnum::from_double(15.5), rqm::rnum(31, 2));
+    EXPECT_EQ(rqm::rnum::from_double(0x1p100), rqm::rnum(rqm::znum::one() << 100));
+    EXPECT_THROW(rqm::rnum::from_double(0.0 / 0.0), std::out_of_range);
+    EXPECT_THROW(rqm::rnum::from_double(1e300 * 1e300), std::out_of_range);
+}
+
 TEST(RQM_RNUM, divide_by_zero)
 {
     EXPECT_THROW(rqm::rnum(4, 0), std::out_of_range);
