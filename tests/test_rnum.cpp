@@ -21,6 +21,18 @@ TEST(RQM_RNUM, IntPairConstructor)
     EXPECT_EQ(r.denom(), rqm::znum(4));
 }
 
+TEST(RQM_RNUM, IntPairConstructor_with_simplification)
+{
+    rqm::rnum r(12, -20);
+    EXPECT_EQ(r.nom(), rqm::znum(-3));
+    EXPECT_EQ(r.denom(), rqm::znum(5));
+}
+
+TEST(RQM_RNUM, divide_by_zero)
+{
+    EXPECT_THROW(rqm::rnum(4, 0), std::out_of_range);
+}
+
 /*
 TEST(RQM_RNUM, FromString)
 {
