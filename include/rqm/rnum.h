@@ -62,6 +62,7 @@ namespace rqm
 
     rnum abs(const rnum &a);
 
+    signum_t compare(const rnum &a, const rnum &b);
     bool operator==(const rnum &a, const rnum &b);
     bool operator!=(const rnum &a, const rnum &b);
     bool operator<(const rnum &a, const rnum &b);

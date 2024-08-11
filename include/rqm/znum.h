@@ -167,6 +167,7 @@ namespace rqm
 
     znum abs(const znum &a);
 
+    signum_t compare(const znum &a, const znum &b);
     bool operator==(const znum &a, const znum &b);
     bool operator!=(const znum &a, const znum &b);
     bool operator<(const znum &a, const znum &b);

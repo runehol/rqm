@@ -73,29 +73,34 @@ namespace rqm
         return znum(abs(a.to_numview()));
     }
 
+    signum_t compare(const znum &a, const znum &b)
+    {
+        return compare(a.to_numview(), b.to_numview());
+    }
+
     bool operator==(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) == 0;
+        return compare(a, b) == 0;
     }
     bool operator!=(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) != 0;
+        return compare(a, b) != 0;
     }
     bool operator<(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) < 0;
+        return compare(a, b) < 0;
     }
     bool operator<=(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) <= 0;
+        return compare(a, b) <= 0;
     }
     bool operator>(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) > 0;
+        return compare(a, b) > 0;
     }
     bool operator>=(const znum &a, const znum &b)
     {
-        return compare(a.to_numview(), b.to_numview()) >= 0;
+        return compare(a, b) >= 0;
     }
 
     znum operator-(const znum &a)

@@ -84,22 +84,27 @@ namespace rqm
         return a.nom() != b.nom() || a.denom() != b.denom();
     }
 
+    signum_t compare(const rnum &a, const rnum &b)
+    {
+        return compare(a.nom() * b.denom(), b.nom() * a.denom());
+    }
+
     bool operator<(const rnum &a, const rnum &b)
     {
-        return a.nom() * b.denom() < b.nom() * a.denom();
+        return compare(a, b) < 0;
     }
     bool operator<=(const rnum &a, const rnum &b)
     {
-        return a.nom() * b.denom() <= b.nom() * a.denom();
+        return compare(a, b) <= 0;
     }
 
     bool operator>(const rnum &a, const rnum &b)
     {
-        return a.nom() * b.denom() > b.nom() * a.denom();
+        return compare(a, b) > 0;
     }
     bool operator>=(const rnum &a, const rnum &b)
     {
-        return a.nom() * b.denom() >= b.nom() * a.denom();
+        return compare(a, b) >= 0;
     }
 
     rnum operator-(const rnum &a)
