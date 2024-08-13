@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "basic_arithmetic.h"
+#include "convert_rnum_to_floating_point.h"
 #include "numview.h"
 #include "string_conversion.h"
 
@@ -173,6 +174,14 @@ namespace rqm
         {
             return rnum(znum::from_string(sv));
         }
+    }
+
+    double to_double(const rnum &a)
+    {
+        uint64_t iresult = convert_rnum_to_floating_point<11, 52>(a);
+        double fresult;
+        memcpy(&fresult, &iresult, sizeof(double));
+        return fresult;
     }
 
 } // namespace rqm

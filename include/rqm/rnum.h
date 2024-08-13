@@ -110,6 +110,7 @@ namespace rqm
 
     std::ostream &operator<<(std::ostream &os, const rnum &a);
     std::string to_string(const rnum &a);
+    double to_double(const rnum &a);
 
 } // namespace rqm
 

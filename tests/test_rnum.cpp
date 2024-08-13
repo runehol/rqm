@@ -38,6 +38,22 @@ TEST(RQM_RNUM, from_double)
     EXPECT_THROW(rqm::rnum::from_double(1e300 * 1e300), std::out_of_range);
 }
 
+TEST(RQM_RNUM, to_double)
+{
+    EXPECT_EQ(rqm::to_double(rqm::rnum(3, 4)), 0.75);
+    EXPECT_EQ(rqm::to_double(rqm::rnum(1337, 1)), 1337.0);
+    EXPECT_EQ(rqm::to_double(rqm::rnum(31, 2)), 15.5);
+    EXPECT_EQ(rqm::to_double(rqm::rnum(rqm::znum::one() << 100)), 0x1p100);
+}
+
+RC_GTEST_PROP(RQM_RNUM, roundtrip_double, (double v))
+{
+    RC_PRE(!std::isinf(v) && !std::isnan(v));
+    rqm::rnum a = rqm::rnum::from_double(v);
+    double v2 = rqm::to_double(a);
+    RC_ASSERT(v2 == v);
+}
+
 TEST(RQM_RNUM, divide_by_zero)
 {
     EXPECT_THROW(rqm::rnum(4, 0), std::out_of_range);
