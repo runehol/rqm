@@ -1,7 +1,7 @@
-#ifndef RQM_CONVERT_RNUM_TO_FLOATING_POINT_H
-#define RQM_CONVERT_RNUM_TO_FLOATING_POINT_H
+#ifndef RQM_CONVERT_QNUM_TO_FLOATING_POINT_H
+#define RQM_CONVERT_QNUM_TO_FLOATING_POINT_H
 
-#include "rqm/rnum.h"
+#include "rqm/qnum.h"
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
@@ -49,7 +49,7 @@ namespace rqm
 
      */
 
-    static signum_t compare_with_pow2(const rnum &v, int32_t exponent)
+    static signum_t compare_with_pow2(const qnum &v, int32_t exponent)
     {
         int32_t posexp = std::max<int32_t>(exponent, 0);
         int32_t negexp = std::max<int32_t>(-exponent, 0);
@@ -66,20 +66,20 @@ namespace rqm
         }
     }
 
-    static rnum subtract_pow2(const rnum &v, int32_t exponent)
+    static qnum subtract_pow2(const qnum &v, int32_t exponent)
     {
         int32_t posexp = std::max<int32_t>(exponent, 0);
         int32_t negexp = std::max<int32_t>(-exponent, 0);
 
         if(posexp > 0)
         {
-            return rnum(v.nom() - (v.denom() << posexp), v.denom());
+            return qnum(v.nom() - (v.denom() << posexp), v.denom());
         } else if(negexp > 0)
         {
-            return rnum((v.nom() << negexp) - v.denom(), v.denom() << negexp);
+            return qnum((v.nom() << negexp) - v.denom(), v.denom() << negexp);
         } else
         {
-            return rnum(v.nom() - v.denom(), v.denom());
+            return qnum(v.nom() - v.denom(), v.denom());
         }
     }
 
@@ -92,13 +92,13 @@ namespace rqm
     }
 
     template<uint32_t n_exponent_bits, uint32_t n_mantissa_bits>
-    uint64_t convert_rnum_to_floating_point(const rnum &_v)
+    uint64_t convert_qnum_to_floating_point(const qnum &_v)
     {
         constexpr int32_t max_exponent = (1ull << n_exponent_bits) - 1;
         constexpr int32_t exp_bias = (1ull << (n_exponent_bits - 1)) - 1;
         if(_v.signum() == 0) return compose_float<n_exponent_bits, n_mantissa_bits>(0, 0, 0);
         bool sign = _v.signum() < 0;
-        rnum v = abs(_v);
+        qnum v = abs(_v);
 
         int32_t exponent_estimate = v.nom().n_bits() - v.denom().n_bits() + 2; // estimate the first set bit. add two, as n_bits is an integer approximation to log2 and may be off by 1.
         int32_t exponent;
@@ -163,4 +163,4 @@ namespace rqm
     }
 } // namespace rqm
 
-#endif // RQM_CONVERT_RNUM_TO_FLOATING_POINT_H
+#endif // RQM_CONVERT_QNUM_TO_FLOATING_POINT_H

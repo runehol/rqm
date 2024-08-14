@@ -1,4 +1,4 @@
-#include "rqm/rnum.h"
+#include "rqm/qnum.h"
 #include <cstdint>
 #include <cstring>
 #include <istream>
@@ -9,20 +9,20 @@
 #include <utility>
 
 #include "basic_arithmetic.h"
-#include "convert_rnum_to_floating_point.h"
+#include "convert_qnum_to_floating_point.h"
 #include "numview.h"
 #include "string_conversion.h"
 
 namespace rqm
 {
-    rnum::rnum(znum nom, znum denom)
+    qnum::qnum(znum nom, znum denom)
         : nominator(std::move(nom)),
           denominator(std::move(denom))
     {
         canonicalize();
     }
 
-    rnum::rnum(int64_t nom, int64_t denom)
+    qnum::qnum(int64_t nom, int64_t denom)
         : nominator(nom),
           denominator(denom)
     {
@@ -30,7 +30,7 @@ namespace rqm
     }
 
     // method that places the number in canonical form (gcd(nom, denom) = 1)
-    void rnum::canonicalize()
+    void qnum::canonicalize()
     {
         if(denominator.signum() == 0) throw std::out_of_range("divide by zero");
         if(denominator.signum() == -1)
@@ -47,7 +47,7 @@ namespace rqm
         }
     }
 
-    rnum rnum::from_double(double value)
+    qnum qnum::from_double(double value)
     {
         if(std::isnan(value)) throw std::out_of_range("cannot represent NaN as a rational number");
         if(std::isinf(value)) throw std::out_of_range("cannot represent infinity as a rational number");
@@ -67,118 +67,118 @@ namespace rqm
         {
             denominator = denominator << -exp;
         }
-        return rnum(std::move(nominator), std::move(denominator));
+        return qnum(std::move(nominator), std::move(denominator));
     }
 
-    rnum abs(const rnum &a)
+    qnum abs(const qnum &a)
     {
-        return rnum(abs(a.nom()), a.denom());
+        return qnum(abs(a.nom()), a.denom());
     }
 
-    // these two rely on the rnums being in canonical form - gcd(nom, denom) == 1, nom >= 1
-    bool operator==(const rnum &a, const rnum &b)
+    // these two rely on the qnums being in canonical form - gcd(nom, denom) == 1, nom >= 1
+    bool operator==(const qnum &a, const qnum &b)
     {
         return a.nom() == b.nom() && a.denom() == b.denom();
     }
-    bool operator!=(const rnum &a, const rnum &b)
+    bool operator!=(const qnum &a, const qnum &b)
     {
         return a.nom() != b.nom() || a.denom() != b.denom();
     }
 
-    signum_t compare(const rnum &a, const rnum &b)
+    signum_t compare(const qnum &a, const qnum &b)
     {
         return compare(a.nom() * b.denom(), b.nom() * a.denom());
     }
 
-    bool operator<(const rnum &a, const rnum &b)
+    bool operator<(const qnum &a, const qnum &b)
     {
         return compare(a, b) < 0;
     }
-    bool operator<=(const rnum &a, const rnum &b)
+    bool operator<=(const qnum &a, const qnum &b)
     {
         return compare(a, b) <= 0;
     }
 
-    bool operator>(const rnum &a, const rnum &b)
+    bool operator>(const qnum &a, const qnum &b)
     {
         return compare(a, b) > 0;
     }
-    bool operator>=(const rnum &a, const rnum &b)
+    bool operator>=(const qnum &a, const qnum &b)
     {
         return compare(a, b) >= 0;
     }
 
-    rnum operator-(const rnum &a)
+    qnum operator-(const qnum &a)
     {
-        return rnum(-a.nom(), a.denom());
+        return qnum(-a.nom(), a.denom());
     }
 
-    rnum operator+(const rnum &a, const rnum &b)
+    qnum operator+(const qnum &a, const qnum &b)
     {
-        return rnum(a.nom() * b.denom() + b.nom() * a.denom(), a.denom() * b.denom());
+        return qnum(a.nom() * b.denom() + b.nom() * a.denom(), a.denom() * b.denom());
     }
 
-    rnum operator-(const rnum &a, const rnum &b)
+    qnum operator-(const qnum &a, const qnum &b)
     {
         return a + (-b);
     }
 
-    rnum operator*(const rnum &a, const rnum &b)
+    qnum operator*(const qnum &a, const qnum &b)
     {
-        return rnum(a.nom() * b.nom(), a.denom() * b.denom());
+        return qnum(a.nom() * b.nom(), a.denom() * b.denom());
     }
 
-    rnum operator*(const rnum &a, int32_t b)
+    qnum operator*(const qnum &a, int32_t b)
     {
-        return rnum(a.nom() * b, a.denom());
+        return qnum(a.nom() * b, a.denom());
     }
 
-    rnum operator/(const rnum &a, int32_t b)
+    qnum operator/(const qnum &a, int32_t b)
     {
-        return rnum(a.nom(), a.denom() * b);
+        return qnum(a.nom(), a.denom() * b);
     }
 
-    rnum operator/(const rnum &a, const rnum &b)
+    qnum operator/(const qnum &a, const qnum &b)
     {
-        return rnum(a.nom() * b.denom(), a.denom() * b.nom());
+        return qnum(a.nom() * b.denom(), a.denom() * b.nom());
     }
 
-    rnum operator*(int32_t a, const rnum &b)
+    qnum operator*(int32_t a, const qnum &b)
     {
         return b * a;
     }
 
-    std::ostream &operator<<(std::ostream &os, const rnum &a)
+    std::ostream &operator<<(std::ostream &os, const qnum &a)
     {
         os << a.nom() << "/" << a.denom();
         return os;
     }
 
-    std::string to_string(const rnum &a)
+    std::string to_string(const qnum &a)
     {
         std::stringstream ss;
         ss << a;
         return ss.str();
     }
 
-    rnum rnum::from_string(const std::string_view sv)
+    qnum qnum::from_string(const std::string_view sv)
     {
         auto slash_pos = sv.find('/');
         if(slash_pos != sv.npos)
         {
             std::string_view str_nom = sv.substr(0, slash_pos);
             std::string_view str_denom = sv.substr(slash_pos + 1, sv.npos);
-            return rnum(znum::from_string(str_nom), znum::from_string(str_denom));
+            return qnum(znum::from_string(str_nom), znum::from_string(str_denom));
 
         } else
         {
-            return rnum(znum::from_string(sv));
+            return qnum(znum::from_string(sv));
         }
     }
 
-    double to_double(const rnum &a)
+    double to_double(const qnum &a)
     {
-        uint64_t iresult = convert_rnum_to_floating_point<11, 52>(a);
+        uint64_t iresult = convert_qnum_to_floating_point<11, 52>(a);
         double fresult;
         memcpy(&fresult, &iresult, sizeof(double));
         return fresult;

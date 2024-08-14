@@ -8,7 +8,7 @@ enable_sanitizers(test_rqm)
 
 target_sources(test_rqm PRIVATE
 		test_znum.cpp
-		test_rnum.cpp
+		test_qnum.cpp
 	)
 
 target_link_libraries(test_rqm PRIVATE gtest_main)
